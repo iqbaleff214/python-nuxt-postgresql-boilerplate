@@ -1,0 +1,134 @@
+<script setup lang="ts">
+import { useForm, useField } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { z } from 'zod'
+
+definePageMeta({ middleware: 'superadmin', layout: 'admin' })
+
+const api = useApi()
+const toast = useToast()
+const router = useRouter()
+
+const schema = toTypedSchema(
+  z.object({
+    email: z.string().email('Please enter a valid email address'),
+    first_name: z.string().min(1, 'First name is required'),
+    last_name: z.string().min(1, 'Last name is required'),
+    role: z.enum(['user', 'superadmin']),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+  })
+)
+
+const { handleSubmit, errors, isSubmitting } = useForm({
+  validationSchema: schema,
+  initialValues: { role: 'user' as const },
+})
+
+const { value: email } = useField<string>('email')
+const { value: firstName } = useField<string>('first_name')
+const { value: lastName } = useField<string>('last_name')
+const { value: role } = useField<'user' | 'superadmin'>('role')
+const { value: password } = useField<string>('password')
+
+const apiError = ref('')
+
+const roleOptions = [
+  { value: 'user', label: 'User' },
+  { value: 'superadmin', label: 'Superadmin' },
+]
+
+const onSubmit = handleSubmit(async (values) => {
+  apiError.value = ''
+  const response = await api.post('/admin/users', values)
+
+  if (response.success) {
+    toast.success('User created successfully')
+    router.push('/admin/users')
+  } else {
+    apiError.value = response.message || 'Failed to create user'
+  }
+})
+</script>
+
+<template>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center gap-3">
+      <NuxtLink to="/admin/users">
+        <AppButton variant="ghost" size="sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back
+        </AppButton>
+      </NuxtLink>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Create user</h1>
+        <p class="mt-0.5 text-sm text-slate-500">Add a new user to the system</p>
+      </div>
+    </div>
+
+    <div class="max-w-2xl">
+      <AppCard title="User information">
+        <AppAlert v-if="apiError" variant="error" class="mb-4" dismissible @dismiss="apiError = ''">
+          {{ apiError }}
+        </AppAlert>
+
+        <form class="space-y-4" @submit="onSubmit">
+          <div class="grid grid-cols-2 gap-4">
+            <AppInput
+              v-model="firstName"
+              label="First name"
+              placeholder="John"
+              :error="errors.first_name"
+              required
+            />
+            <AppInput
+              v-model="lastName"
+              label="Last name"
+              placeholder="Doe"
+              :error="errors.last_name"
+              required
+            />
+          </div>
+
+          <AppInput
+            v-model="email"
+            label="Email address"
+            type="email"
+            placeholder="user@example.com"
+            :error="errors.email"
+            required
+          />
+
+          <AppSelect
+            v-model="role"
+            label="Role"
+            :options="roleOptions"
+            :error="errors.role"
+            required
+          />
+
+          <AppInput
+            v-model="password"
+            label="Temporary password"
+            type="password"
+            placeholder="Min. 8 characters"
+            :error="errors.password"
+            hint="User will be prompted to change this on first login"
+            required
+          />
+
+          <div class="flex gap-3 justify-end border-t border-slate-100 pt-4">
+            <NuxtLink to="/admin/users">
+              <AppButton variant="secondary">Cancel</AppButton>
+            </NuxtLink>
+            <AppButton type="submit" variant="primary" :loading="isSubmitting">
+              Create user
+            </AppButton>
+          </div>
+        </form>
+      </AppCard>
+    </div>
+  </div>
+</template>

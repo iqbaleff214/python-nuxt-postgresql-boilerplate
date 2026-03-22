@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Your {{ app_name }} Account Has Been Created{% endblock %}
+
+{% block content %}
+<h1>Welcome to {{ app_name }}!</h1>
+<p>Hi {{ first_name }},</p>
+<p>An administrator has created a <strong>{{ app_name }}</strong> account for you. You're all set to get started.</p>
+
+<p>A temporary password has been generated for your account:</p>
+
+<div class="code-block">{{ temp_password }}</div>
+
+<p>For security reasons, please set a new password as soon as you log in for the first time.</p>
+
+<div class="btn-center">
+  <a href="{{ set_password_url }}" class="btn">Set Your Password</a>
+</div>
+
+<hr class="divider" />
+
+<div class="alert">
+  <strong>Keep this email private.</strong> Do not share your temporary password with anyone. {{ app_name }} will never ask you for your password.
+</div>
+
+<p class="small-text">
+  If you were not expecting this email or don't recognize this account, please contact our support team immediately.
+</p>
+{% endblock %}

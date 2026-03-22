@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Your New Email — {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>Confirm your new email address</h1>
+<p>Hi {{ first_name }},</p>
+<p>You recently requested to change the email address associated with your <strong>{{ app_name }}</strong> account. Please click the button below to confirm your new email address. This link will expire in <strong>24 hours</strong>.</p>
+
+<div class="btn-center">
+  <a href="{{ verify_url }}" class="btn">Confirm New Email</a>
+</div>
+
+<hr class="divider" />
+
+<div class="alert">
+  <strong>Didn't request this?</strong> If you did not request an email change, please contact support immediately — someone may have access to your account.
+</div>
+
+<p class="small-text">
+  If the button above doesn't work, copy and paste this link into your browser:
+</p>
+<p class="small-text" style="word-break: break-all; color: #6366f1;">{{ verify_url }}</p>
+{% endblock %}

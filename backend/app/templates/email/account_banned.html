@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Account Banned — {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>Your account has been banned</h1>
+<p>Hi {{ first_name }},</p>
+<p>After review, your <strong>{{ app_name }}</strong> account has been permanently banned due to a violation of our Terms of Service.</p>
+
+<div class="alert alert-danger">
+  <strong>Reason:</strong> {{ reason }}
+</div>
+
+<p>As a result of this ban:</p>
+<ul style="margin: 12px 0 16px 20px; color: #4b5563; font-size: 15px;">
+  <li style="margin-bottom: 8px;">You will no longer be able to log in to your account.</li>
+  <li style="margin-bottom: 8px;">Your public profile and content may be removed.</li>
+  <li style="margin-bottom: 8px;">This decision may be permanent.</li>
+</ul>
+
+<hr class="divider" />
+
+<p>If you believe this ban was issued in error, you may appeal by contacting our support team. Please note that not all appeals will result in a reversal of the ban.</p>
+
+<div class="btn-center">
+  <a href="mailto:support@{{ app_name | lower }}.com" class="btn">Appeal This Decision</a>
+</div>
+{% endblock %}

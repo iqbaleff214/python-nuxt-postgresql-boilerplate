@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Email Verified — {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>Your email is verified! ✅</h1>
+<p>Hi {{ first_name }},</p>
+<p>Great news — your email address has been successfully verified. Your <strong>{{ app_name }}</strong> account is now fully active and ready to use.</p>
+
+<div class="btn-center">
+  <a href="{{ app_url if app_url is defined else '#' }}" class="btn">Go to Dashboard</a>
+</div>
+
+<hr class="divider" />
+
+<p class="small-text">
+  If you did not verify this account, please contact our support team immediately.
+</p>
+{% endblock %}

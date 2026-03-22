@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Account Deactivated — {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>Your account has been deactivated</h1>
+<p>Hi {{ first_name }},</p>
+<p>We're writing to let you know that your <strong>{{ app_name }}</strong> account has been deactivated by an administrator.</p>
+<p>While your account is deactivated, you will not be able to log in or access any account features.</p>
+
+<hr class="divider" />
+
+<p>If you believe this was done in error or would like to appeal this decision, please contact our support team. We're here to help.</p>
+
+<div class="btn-center">
+  <a href="mailto:support@{{ app_name | lower }}.com" class="btn">Contact Support</a>
+</div>
+
+<p class="small-text">
+  Your data is safe and will be retained in accordance with our data retention policy.
+</p>
+{% endblock %}

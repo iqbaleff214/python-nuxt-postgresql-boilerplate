@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Account Deletion Scheduled — {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>Account deletion scheduled</h1>
+<p>Hi {{ first_name }},</p>
+<p>We've received your request to delete your <strong>{{ app_name }}</strong> account. Your account has been scheduled for permanent deletion in <strong>30 days</strong>.</p>
+
+<p>During this period, your account will be inaccessible. After 30 days, all your data will be permanently and irreversibly deleted.</p>
+
+<hr class="divider" />
+
+<p><strong>Changed your mind?</strong> You can cancel the deletion at any time within the next 30 days by clicking the button below.</p>
+
+<div class="btn-center">
+  <a href="{{ cancel_url }}" class="btn" style="background-color: #10b981;">Cancel Deletion</a>
+</div>
+
+<hr class="divider" />
+
+<div class="alert">
+  <strong>Important:</strong> After 30 days, your account and all associated data cannot be recovered.
+</div>
+
+<p class="small-text">
+  If the button above doesn't work, copy and paste this link into your browser:
+</p>
+<p class="small-text" style="word-break: break-all; color: #6366f1;">{{ cancel_url }}</p>
+{% endblock %}

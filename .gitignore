@@ -1,0 +1,47 @@
+# Environment files
+.env
+.env.dev
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.eggs/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Node.js / Nuxt
+node_modules/
+.nuxt/
+.output/
+dist/
+.cache/
+
+# Docker volumes (local)
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Alembic
+# (keep migrations in version control)

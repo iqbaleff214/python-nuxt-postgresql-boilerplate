@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to {{ app_name }} — Verify Your Email{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ first_name }}! 👋</h1>
+<p>Thanks for signing up for <strong>{{ app_name }}</strong>. We're excited to have you on board.</p>
+<p>To get started, please verify your email address by clicking the button below. This link will expire in <strong>24 hours</strong>.</p>
+
+<div class="btn-center">
+  <a href="{{ verify_url }}" class="btn">Verify My Email</a>
+</div>
+
+<hr class="divider" />
+
+<p class="small-text">
+  If the button above doesn't work, copy and paste this link into your browser:
+</p>
+<p class="small-text" style="word-break: break-all; color: #6366f1;">{{ verify_url }}</p>
+
+<hr class="divider" />
+
+<p class="small-text">
+  If you did not create an account with {{ app_name }}, you can safely ignore this email.
+</p>
+{% endblock %}
