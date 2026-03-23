@@ -33,17 +33,17 @@ const shadowClasses = computed(() => {
 </script>
 
 <template>
-  <div :class="['rounded-xl border border-slate-200 bg-white', shadowClasses]">
-    <div v-if="title || subtitle || $slots.header" class="border-b border-slate-100 px-6 py-4">
+  <div :class="['rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800', shadowClasses]">
+    <div v-if="title || subtitle || $slots.header" class="border-b border-slate-100 px-6 py-4 dark:border-slate-700">
       <slot name="header">
-        <h3 v-if="title" class="text-base font-semibold text-slate-900">{{ title }}</h3>
-        <p v-if="subtitle" class="mt-0.5 text-sm text-slate-500">{{ subtitle }}</p>
+        <h3 v-if="title" class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ title }}</h3>
+        <p v-if="subtitle" class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{{ subtitle }}</p>
       </slot>
     </div>
     <div :class="paddingClasses">
       <slot />
     </div>
-    <div v-if="$slots.footer" class="border-t border-slate-100 px-6 py-4">
+    <div v-if="$slots.footer" class="border-t border-slate-100 px-6 py-4 dark:border-slate-700">
       <slot name="footer" />
     </div>
   </div>

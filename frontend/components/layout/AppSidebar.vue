@@ -82,29 +82,29 @@ function isActive(to: string) {
   <!-- Sidebar -->
   <aside
     :class="[
-      'fixed left-0 top-0 z-30 flex h-full w-64 flex-col bg-white border-r border-slate-200',
+      'fixed left-0 top-0 z-30 flex h-full w-64 flex-col bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-700',
       'transition-transform duration-300 ease-in-out',
       'lg:translate-x-0 lg:static lg:h-screen',
       open ? 'translate-x-0' : '-translate-x-full',
     ]"
   >
     <!-- Logo -->
-    <div class="flex h-16 items-center gap-3 border-b border-slate-200 px-5">
+    <div class="flex h-16 items-center gap-3 border-b border-slate-200 px-5 dark:border-slate-700">
       <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       </div>
       <div>
-        <p class="text-base font-bold text-slate-900">Loqato</p>
-        <p class="text-xs text-slate-500">Channel Manager</p>
+        <p class="text-base font-bold text-slate-900 dark:text-slate-100">Loqato</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Channel Manager</p>
       </div>
     </div>
 
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto px-3 py-4">
       <div class="space-y-0.5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">Main</p>
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Main</p>
 
         <NuxtLink
           v-for="item in navItems"
@@ -113,13 +113,13 @@ function isActive(to: string) {
           :class="[
             'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
             isActive(item.to)
-              ? 'bg-indigo-50 text-indigo-700'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+              ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
           ]"
           @click="emit('close')"
         >
           <svg
-            :class="['h-5 w-5 flex-shrink-0', isActive(item.to) ? 'text-indigo-600' : 'text-slate-400']"
+            :class="['h-5 w-5 flex-shrink-0', isActive(item.to) ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500']"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -133,7 +133,7 @@ function isActive(to: string) {
 
       <!-- Admin section -->
       <div v-if="authStore.isSuperAdmin" class="mt-6 space-y-0.5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">Administration</p>
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Administration</p>
 
         <NuxtLink
           v-for="item in adminNavItems"
@@ -142,13 +142,13 @@ function isActive(to: string) {
           :class="[
             'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
             isActive(item.to)
-              ? 'bg-indigo-50 text-indigo-700'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+              ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
           ]"
           @click="emit('close')"
         >
           <svg
-            :class="['h-5 w-5 flex-shrink-0', isActive(item.to) ? 'text-indigo-600' : 'text-slate-400']"
+            :class="['h-5 w-5 flex-shrink-0', isActive(item.to) ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500']"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -162,7 +162,7 @@ function isActive(to: string) {
     </nav>
 
     <!-- User info at bottom -->
-    <div class="border-t border-slate-200 p-3">
+    <div class="border-t border-slate-200 p-3 dark:border-slate-700">
       <div class="flex items-center gap-3 rounded-lg px-2 py-2">
         <AppAvatar
           :src="authStore.user?.avatar_url"
@@ -170,10 +170,10 @@ function isActive(to: string) {
           size="sm"
         />
         <div class="flex-1 min-w-0">
-          <p class="truncate text-sm font-medium text-slate-900">
+          <p class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
             {{ authStore.user?.display_name || `${authStore.user?.first_name} ${authStore.user?.last_name}` }}
           </p>
-          <p class="truncate text-xs text-slate-500">{{ authStore.user?.role }}</p>
+          <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ authStore.user?.role }}</p>
         </div>
       </div>
     </div>

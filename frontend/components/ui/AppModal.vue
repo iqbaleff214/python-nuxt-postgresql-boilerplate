@@ -76,14 +76,14 @@ watch(
         >
           <div
             v-if="modelValue"
-            :class="['relative z-10 w-full rounded-xl bg-white shadow-xl', sizeClasses]"
+            :class="['relative z-10 w-full rounded-xl bg-white shadow-xl dark:bg-slate-800', sizeClasses]"
           >
             <!-- Header -->
-            <div v-if="title" class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <h3 class="text-base font-semibold text-slate-900">{{ title }}</h3>
+            <div v-if="title" class="flex items-center justify-between border-b border-slate-100 px-6 py-4 dark:border-slate-700">
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ title }}</h3>
               <button
                 type="button"
-                class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-300"
                 @click="close"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,7 +98,7 @@ watch(
             </div>
 
             <!-- Footer -->
-            <div v-if="$slots.footer" class="border-t border-slate-100 px-6 py-4">
+            <div v-if="$slots.footer" class="border-t border-slate-100 px-6 py-4 dark:border-slate-700">
               <slot name="footer" />
             </div>
           </div>

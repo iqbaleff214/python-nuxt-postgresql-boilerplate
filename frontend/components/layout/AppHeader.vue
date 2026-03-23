@@ -23,11 +23,11 @@ async function handleLogout() {
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 lg:px-6">
+  <header class="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 lg:px-6 dark:bg-slate-900 dark:border-slate-700">
     <!-- Mobile menu toggle -->
     <button
       type="button"
-      class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 lg:hidden"
+      class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 lg:hidden"
       @click="emit('toggleSidebar')"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,6 +50,9 @@ async function handleLogout() {
 
     <!-- Right side actions -->
     <div class="flex items-center gap-2">
+      <!-- Theme Toggle -->
+      <ThemeToggle />
+
       <!-- Notification Bell -->
       <NotificationBell />
 
@@ -57,7 +60,7 @@ async function handleLogout() {
       <div ref="userMenuRef" class="relative">
         <button
           type="button"
-          class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-slate-100"
+          class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
           @click="isUserMenuOpen = !isUserMenuOpen"
         >
           <AppAvatar
@@ -81,19 +84,19 @@ async function handleLogout() {
         >
           <div
             v-if="isUserMenuOpen"
-            class="absolute right-0 top-11 z-50 w-52 rounded-xl border border-slate-200 bg-white shadow-lg py-1"
+            class="absolute right-0 top-11 z-50 w-52 rounded-xl border border-slate-200 bg-white shadow-lg py-1 dark:border-slate-700 dark:bg-slate-800"
           >
-            <div class="border-b border-slate-100 px-3 pb-2 pt-1.5">
-              <p class="text-xs font-semibold text-slate-900 truncate">{{ userName }}</p>
-              <p class="text-xs text-slate-500 truncate">{{ authStore.user?.email }}</p>
+            <div class="border-b border-slate-100 px-3 pb-2 pt-1.5 dark:border-slate-700">
+              <p class="text-xs font-semibold text-slate-900 truncate dark:text-slate-100">{{ userName }}</p>
+              <p class="text-xs text-slate-500 truncate dark:text-slate-400">{{ authStore.user?.email }}</p>
             </div>
 
             <NuxtLink
               to="/profile"
-              class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+              class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors dark:text-slate-300 dark:hover:bg-slate-700"
               @click="isUserMenuOpen = false"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Profile
@@ -101,20 +104,20 @@ async function handleLogout() {
 
             <NuxtLink
               to="/profile/security"
-              class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+              class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors dark:text-slate-300 dark:hover:bg-slate-700"
               @click="isUserMenuOpen = false"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
               Security
             </NuxtLink>
 
-            <div class="my-1 border-t border-slate-100" />
+            <div class="my-1 border-t border-slate-100 dark:border-slate-700" />
 
             <button
               type="button"
-              class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+              class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors dark:hover:bg-red-900/20"
               @click="handleLogout"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -30,12 +30,12 @@ const inputType = computed(() => {
 })
 
 const baseClasses =
-  'w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder-slate-400 transition-all duration-150 focus:outline-none focus:ring-2'
+  'w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder-slate-400 transition-all duration-150 focus:outline-none focus:ring-2 dark:text-slate-100 dark:placeholder-slate-500'
 const normalClasses =
-  'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-500/20'
+  'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-700'
 const errorClasses =
-  'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-500/20'
-const disabledClasses = 'bg-slate-100 text-slate-500 cursor-not-allowed'
+  'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-500/20 dark:bg-red-900/20 dark:border-red-500'
+const disabledClasses = 'bg-slate-100 text-slate-500 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500'
 </script>
 
 <template>
@@ -43,7 +43,7 @@ const disabledClasses = 'bg-slate-100 text-slate-500 cursor-not-allowed'
     <label
       v-if="label"
       :for="inputId"
-      class="mb-1.5 block text-sm font-medium text-slate-700"
+      class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
     >
       {{ label }}
       <span v-if="required" class="text-red-500 ml-0.5">*</span>
@@ -69,7 +69,7 @@ const disabledClasses = 'bg-slate-100 text-slate-500 cursor-not-allowed'
       <button
         v-if="type === 'password'"
         type="button"
-        class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors dark:text-slate-500 dark:hover:text-slate-300"
         @click="showPassword = !showPassword"
       >
         <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,6 +83,6 @@ const disabledClasses = 'bg-slate-100 text-slate-500 cursor-not-allowed'
     </div>
 
     <p v-if="error" class="mt-1.5 text-xs text-red-600">{{ error }}</p>
-    <p v-else-if="hint" class="mt-1.5 text-xs text-slate-500">{{ hint }}</p>
+    <p v-else-if="hint" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{{ hint }}</p>
   </div>
 </template>

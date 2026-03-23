@@ -20,13 +20,13 @@ const variantClasses = computed(() => {
     primary:
       'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 border-transparent shadow-sm',
     secondary:
-      'bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-slate-400 border-transparent',
+      'bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-slate-400 border-transparent dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600',
     danger:
       'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border-transparent shadow-sm',
     ghost:
-      'bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-slate-400 border-transparent',
+      'bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-slate-400 border-transparent dark:text-slate-400 dark:hover:bg-slate-700',
     outline:
-      'bg-transparent text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-400 border-indigo-300',
+      'bg-transparent text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-400 border-indigo-300 dark:text-indigo-400 dark:hover:bg-indigo-900/20 dark:border-indigo-700',
   }
   return map[props.variant] ?? map.primary
 })
@@ -50,7 +50,7 @@ const isDisabled = computed(() => props.disabled || props.loading)
     :class="[
       'inline-flex items-center justify-center gap-2 font-medium rounded-lg border',
       'transition-all duration-150 ease-in-out',
-      'focus:outline-none focus:ring-2 focus:ring-offset-2',
+      'focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800',
       variantClasses,
       sizeClasses,
       isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',

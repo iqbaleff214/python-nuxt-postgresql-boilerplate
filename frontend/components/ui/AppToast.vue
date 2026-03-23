@@ -11,24 +11,24 @@ const { remove } = useToast()
 const variantConfig = computed(() => {
   const map = {
     success: {
-      wrapper: 'bg-white border-l-4 border-emerald-500',
+      wrapper: 'bg-white border-l-4 border-emerald-500 dark:bg-slate-800',
       icon: 'text-emerald-500',
-      title: 'text-slate-900',
+      title: 'text-slate-900 dark:text-slate-100',
     },
     error: {
-      wrapper: 'bg-white border-l-4 border-red-500',
+      wrapper: 'bg-white border-l-4 border-red-500 dark:bg-slate-800',
       icon: 'text-red-500',
-      title: 'text-slate-900',
+      title: 'text-slate-900 dark:text-slate-100',
     },
     warning: {
-      wrapper: 'bg-white border-l-4 border-amber-500',
+      wrapper: 'bg-white border-l-4 border-amber-500 dark:bg-slate-800',
       icon: 'text-amber-500',
-      title: 'text-slate-900',
+      title: 'text-slate-900 dark:text-slate-100',
     },
     info: {
-      wrapper: 'bg-white border-l-4 border-sky-500',
+      wrapper: 'bg-white border-l-4 border-sky-500 dark:bg-slate-800',
       icon: 'text-sky-500',
-      title: 'text-slate-900',
+      title: 'text-slate-900 dark:text-slate-100',
     },
   }
   return map[props.toast.type] ?? map.info
@@ -63,7 +63,7 @@ const variantConfig = computed(() => {
 
     <button
       type="button"
-      class="flex-shrink-0 rounded p-0.5 text-slate-400 hover:text-slate-600 transition-colors"
+      class="flex-shrink-0 rounded p-0.5 text-slate-400 hover:text-slate-600 transition-colors dark:text-slate-500 dark:hover:text-slate-300"
       @click="remove(toast.id)"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
