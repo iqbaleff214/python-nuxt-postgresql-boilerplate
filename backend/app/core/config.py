@@ -44,6 +44,12 @@ class Settings(BaseSettings):
     SENDGRID_API_KEY: str = ""
     RESEND_API_KEY: str = ""
 
+    # Superadmin seed
+    SUPERADMIN_EMAIL: str = "admin@example.com"
+    SUPERADMIN_PASSWORD: str = "Admin1234!"
+    SUPERADMIN_FIRST_NAME: str = "Super"
+    SUPERADMIN_LAST_NAME: str = "Admin"
+
     # Storage
     STORAGE_BACKEND: Literal["local", "s3"] = "local"
     STORAGE_PATH: str = "./uploads"

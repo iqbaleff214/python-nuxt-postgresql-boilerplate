@@ -12,6 +12,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.config import settings
 from app.core.database import run_migrations
+from app.core.seed import seed_superadmin
 from app.core.redis import (
     init_arq_pool,
     close_arq_pool,
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI):
     try:
         await run_migrations()
         logger.info("Database migrations complete.")
+        await seed_superadmin()
     except Exception as exc:
         logger.warning("Migration failed (may be OK if DB not ready): %s", exc)
 
