@@ -358,7 +358,7 @@ async def forgot_password(db: AsyncSession, email: str) -> tuple[User | None, st
     """Create a password reset token. Always returns 200 to prevent enumeration."""
     result = await db.execute(select(User).where(User.email == email.lower()))
     user = result.scalar_one_or_none()
-    if not user or not user.is_email_verified:
+    if not user or user.deleted_at is not None:
         return None, None
 
     # Invalidate old reset tokens
