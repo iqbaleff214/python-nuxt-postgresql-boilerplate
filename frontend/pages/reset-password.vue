@@ -56,7 +56,7 @@ const onSubmit = handleSubmit(async (values) => {
   apiError.value = ''
   const response = await api.post('/auth/reset-password', {
     token,
-    password: values.password,
+    new_password: values.password,
   })
 
   if (response.success) {
