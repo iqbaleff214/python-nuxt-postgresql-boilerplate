@@ -39,10 +39,14 @@ class User(Base):
     bio: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     role: Mapped[UserRole] = mapped_column(
-        SAEnum(UserRole, name="userrole"), default=UserRole.USER, nullable=False
+        SAEnum(UserRole, name="userrole", values_callable=lambda x: [e.value for e in x]),
+        default=UserRole.USER,
+        nullable=False,
     )
     status: Mapped[UserStatus] = mapped_column(
-        SAEnum(UserStatus, name="userstatus"), default=UserStatus.ACTIVE, nullable=False
+        SAEnum(UserStatus, name="userstatus", values_callable=lambda x: [e.value for e in x]),
+        default=UserStatus.ACTIVE,
+        nullable=False,
     )
     is_email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     totp_secret: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

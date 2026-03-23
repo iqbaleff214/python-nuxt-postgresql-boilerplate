@@ -16,7 +16,7 @@ onMounted(async () => {
     return
   }
 
-  const response = await api.post('/auth/verify-email', { token })
+  const response = await api.post(`/auth/verify-email?token=${encodeURIComponent(token)}`)
 
   if (response.success) {
     status.value = 'success'

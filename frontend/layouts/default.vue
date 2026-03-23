@@ -5,12 +5,12 @@ const sidebarOpen = ref(false)
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden">
     <!-- Sidebar -->
-    <LayoutAppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
+    <AppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
 
     <!-- Main content area -->
     <div class="flex flex-1 flex-col min-w-0 lg:ml-0">
       <!-- Header -->
-      <LayoutAppHeader @toggle-sidebar="sidebarOpen = !sidebarOpen" />
+      <AppHeader @toggle-sidebar="sidebarOpen = !sidebarOpen" />
 
       <!-- Page content -->
       <main class="flex-1 overflow-y-auto">

@@ -6,12 +6,13 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 RUN pip install uv
 
+ENV PATH="/app/.venv/bin:$PATH"
+ENV VIRTUAL_ENV="/app/.venv"
+
 COPY pyproject.toml .
 RUN uv sync
 
 COPY . .
-
-ENV PATH="/app/.venv/bin:$PATH"
 
 EXPOSE 8000
 

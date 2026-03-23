@@ -62,11 +62,11 @@ async function uploadAvatar() {
   isUploadingAvatar.value = true
 
   const formData = new FormData()
-  formData.append('avatar', avatarFile.value)
+  formData.append('file', avatarFile.value)
 
   const authStore2 = useAuthStore()
   try {
-    const response = await $fetch<any>('/profile/me/avatar', {
+    const response = await $fetch<any>('/profile/avatar', {
       method: 'POST',
       baseURL: useRuntimeConfig().public.apiBase as string,
       headers: { Authorization: `Bearer ${authStore2.accessToken}` },

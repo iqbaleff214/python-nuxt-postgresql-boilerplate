@@ -39,7 +39,8 @@ class Token(Base):
     )
     token: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     type: Mapped[TokenType] = mapped_column(
-        SAEnum(TokenType, name="tokentype"), nullable=False
+        SAEnum(TokenType, name="tokentype", values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
     )
     metadata_: Mapped[Optional[Any]] = mapped_column("metadata", JSON, nullable=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

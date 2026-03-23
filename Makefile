@@ -35,7 +35,7 @@ migrate: ## Run database migrations (inside running backend container)
 	docker compose -f docker-compose.dev.yml exec backend alembic upgrade head
 
 gen-key: ## Generate a Fernet encryption key for TOTP_ENCRYPTION_KEY
-	@python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+	@python3 -c "import base64, secrets; print(base64.urlsafe_b64encode(secrets.token_bytes(32)).decode())"
 
 shell-be: ## Open a shell in the backend container
 	docker compose -f docker-compose.dev.yml exec backend bash

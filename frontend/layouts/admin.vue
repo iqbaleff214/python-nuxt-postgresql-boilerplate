@@ -13,10 +13,10 @@ const sidebarOpen = ref(false)
 
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden">
-    <LayoutAppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
+    <AppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
 
     <div class="flex flex-1 flex-col min-w-0">
-      <LayoutAppHeader @toggle-sidebar="sidebarOpen = !sidebarOpen" />
+      <AppHeader @toggle-sidebar="sidebarOpen = !sidebarOpen" />
 
       <!-- Admin breadcrumb bar -->
       <div class="border-b border-slate-200 bg-white px-4 py-2 lg:px-6">

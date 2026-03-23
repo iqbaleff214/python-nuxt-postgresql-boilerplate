@@ -51,7 +51,7 @@ async function handleLogout() {
     <!-- Right side actions -->
     <div class="flex items-center gap-2">
       <!-- Notification Bell -->
-      <LayoutNotificationBell />
+      <NotificationBell />
 
       <!-- User Menu -->
       <div ref="userMenuRef" class="relative">
