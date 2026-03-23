@@ -67,7 +67,7 @@ watch(otpValue, (val) => {
 
     <form class="space-y-5" @submit.prevent="handleSubmit">
       <div v-if="!useRecovery">
-        <AuthOtpInput
+        <OtpInput
           v-model="otpValue"
           :disabled="isSubmitting"
           :error="error && otpValue.length > 0 ? '' : undefined"

@@ -38,7 +38,7 @@ async function handleChangePassword() {
   if (!valid) return
 
   isSavingPassword.value = true
-  const response = await api.patch('/profile/me/password', {
+  const response = await api.post('/auth/change-password', {
     current_password: passwordForm.current_password,
     new_password: passwordForm.new_password,
   })
@@ -58,22 +58,31 @@ async function handleChangePassword() {
 const isDisabling2fa = ref(false)
 const showDisable2faModal = ref(false)
 const disable2faPassword = ref('')
+const disable2faOtp = ref('')
+const disable2faOtpError = ref('')
 
 async function handleDisable2fa() {
   if (!disable2faPassword.value) {
     toast.error('Please enter your password to confirm')
     return
   }
+  if (disable2faOtp.value.length !== 6) {
+    disable2faOtpError.value = 'Please enter the 6-digit code from your authenticator app'
+    return
+  }
 
   isDisabling2fa.value = true
-  const response = await api.delete('/profile/me/2fa', {
-    headers: { 'X-Confirm-Password': disable2faPassword.value },
+  disable2faOtpError.value = ''
+  const response = await api.post('/profile/2fa/disable', {
+    password: disable2faPassword.value,
+    code: disable2faOtp.value,
   })
 
   if (response.success) {
     await authStore.fetchMe()
     showDisable2faModal.value = false
     disable2faPassword.value = ''
+    disable2faOtp.value = ''
     toast.success('Two-factor authentication disabled')
   } else {
     toast.error(response.message || 'Failed to disable 2FA')
@@ -196,7 +205,7 @@ const strengthColor = computed(() => ['', 'bg-red-500', 'bg-orange-500', 'bg-amb
       </div>
 
       <div v-else class="space-y-4">
-        <div class="flex items-start gap-3 rounded-lg bg-amber-50 border border-amber-200 p-4">
+        <div class="flex items-start gap-3 rounded-lg bg-amber-50 border border-amber-200 p-4 mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -231,10 +240,17 @@ const strengthColor = computed(() => ['', 'bg-red-500', 'bg-orange-500', 'bg-amb
           type="password"
           placeholder="Enter your current password"
         />
+
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-slate-700">
+            Authenticator code <span class="text-red-500">*</span>
+          </label>
+          <OtpInput v-model="disable2faOtp" :error="disable2faOtpError" />
+        </div>
       </div>
       <template #footer>
         <div class="flex gap-3 justify-end">
-          <AppButton variant="secondary" @click="showDisable2faModal = false">Cancel</AppButton>
+          <AppButton variant="secondary" @click="showDisable2faModal = false; disable2faOtpError = ''">Cancel</AppButton>
           <AppButton variant="danger" :loading="isDisabling2fa" @click="handleDisable2fa">
             Disable 2FA
           </AppButton>
