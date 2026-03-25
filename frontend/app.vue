@@ -7,9 +7,9 @@
 
 <script setup lang="ts">
 useHead({
-  titleTemplate: (title) => title ? `${title} — Loqato` : 'Loqato Channel Manager',
+  titleTemplate: (title) => title ? `${title} — 404NFID` : 'PythonNuxtStarterkit',
   meta: [
-    { name: 'description', content: 'Loqato Channel Manager — Modern notification and user management platform' },
+    { name: 'description', content: 'PythonNuxtStarterkit — Modern notification and user management platform' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
   ],
 })

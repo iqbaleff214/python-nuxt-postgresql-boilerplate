@@ -15,8 +15,8 @@
           </svg>
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-white">Loqato</h1>
-          <p class="text-sm text-indigo-200">Channel Manager</p>
+          <h1 class="text-2xl font-bold text-white">404NFID</h1>
+          <p class="text-sm text-indigo-200">Starter Kit</p>
         </div>
       </div>
 
@@ -26,7 +26,7 @@
       </div>
 
       <p class="mt-6 text-center text-xs text-indigo-300">
-        &copy; {{ new Date().getFullYear() }} Loqato. All rights reserved.
+        &copy; {{ new Date().getFullYear() }} 404NFID. All rights reserved.
       </p>
     </div>
   </div>

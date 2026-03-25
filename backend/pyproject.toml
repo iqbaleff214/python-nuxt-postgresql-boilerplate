@@ -1,7 +1,7 @@
 [project]
-name = "loqato-channel-manager-backend"
+name = "404nfid-starter-kit-backend"
 version = "0.1.0"
-description = "Loqato Channel Manager Backend API"
+description = "PythonNuxtStarterkit Backend API"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

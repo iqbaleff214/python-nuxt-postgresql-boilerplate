@@ -94,7 +94,7 @@ const onSubmit = handleSubmit(async (values) => {
     <div v-else>
       <div class="mb-6 text-center">
         <h2 class="text-2xl font-bold text-slate-900">Create account</h2>
-        <p class="mt-1 text-sm text-slate-500">Get started with Loqato today</p>
+        <p class="mt-1 text-sm text-slate-500">Get started with 404NFID today</p>
       </div>
 
       <AppAlert v-if="apiError" variant="error" class="mb-4" dismissible @dismiss="apiError = ''">

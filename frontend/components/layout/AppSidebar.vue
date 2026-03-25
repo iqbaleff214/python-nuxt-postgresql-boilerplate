@@ -96,8 +96,8 @@ function isActive(to: string) {
         </svg>
       </div>
       <div>
-        <p class="text-base font-bold text-slate-900 dark:text-slate-100">Loqato</p>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Channel Manager</p>
+        <p class="text-base font-bold text-slate-900 dark:text-slate-100">404NFID</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Starter Kit</p>
       </div>
     </div>
 
