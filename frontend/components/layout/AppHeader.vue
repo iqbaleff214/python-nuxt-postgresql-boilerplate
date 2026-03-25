@@ -8,7 +8,7 @@ useI18n()
 const userMenuRef = ref<HTMLElement | null>(null)
 const isUserMenuOpen = ref(false)
 
-const emit = defineEmits<{ toggleSidebar: [] }>()
+const { toggle, toggleMobile } = useSidebar()
 
 onClickOutside(userMenuRef, () => { isUserMenuOpen.value = false })
 
@@ -25,11 +25,22 @@ async function handleLogout() {
 
 <template>
   <header class="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 lg:px-6 dark:bg-slate-900 dark:border-slate-700">
-    <!-- Mobile menu toggle -->
+    <!-- Desktop: collapse/expand sidebar -->
+    <button
+      type="button"
+      class="hidden lg:flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+      @click="toggle"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <!-- Mobile: open sidebar drawer -->
     <button
       type="button"
       class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 lg:hidden"
-      @click="emit('toggleSidebar')"
+      @click="toggleMobile"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />

@@ -8,15 +8,15 @@ if (!authStore.isSuperAdmin) {
   await navigateTo('/dashboard')
 }
 
-const sidebarOpen = ref(false)
+
 </script>
 
 <template>
   <div class="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
-    <AppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
+    <AppSidebar />
 
     <div class="flex min-w-0 flex-1 flex-col">
-      <AppHeader @toggle-sidebar="sidebarOpen = !sidebarOpen" />
+      <AppHeader />
 
       <!-- Admin breadcrumb bar -->
       <div class="border-b border-slate-200 bg-white px-4 py-2 lg:px-6 dark:border-slate-700 dark:bg-slate-900">

@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 
-interface Props {
-  open?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), { open: false })
-const emit = defineEmits<{ close: [] }>()
-
 const authStore = useAuthStore()
 const route = useRoute()
 const { t } = useI18n()
+const { collapsed, mobileOpen, closeMobile } = useSidebar()
 
 interface NavItem {
   label: string
@@ -71,9 +65,9 @@ function isActive(to: string) {
     leave-to-class="opacity-0"
   >
     <div
-      v-if="open"
+      v-if="mobileOpen"
       class="fixed inset-0 z-20 bg-slate-900/50 backdrop-blur-sm lg:hidden"
-      @click="emit('close')"
+      @click="closeMobile"
     />
   </Transition>
 
@@ -81,42 +75,52 @@ function isActive(to: string) {
   <aside
     :class="[
       'fixed left-0 top-0 z-30 flex h-full w-64 flex-col bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-700',
-      'transition-transform duration-300 ease-in-out',
-      'lg:translate-x-0 lg:static lg:h-screen',
-      open ? 'translate-x-0' : '-translate-x-full',
+      'transition-all duration-300 ease-in-out',
+      'lg:static lg:h-screen lg:translate-x-0',
+      collapsed ? 'lg:w-16' : 'lg:w-64',
+      mobileOpen ? 'translate-x-0' : '-translate-x-full',
     ]"
   >
     <!-- Logo -->
-    <div class="flex h-16 items-center gap-3 border-b border-slate-200 px-5 dark:border-slate-700">
-      <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 shadow-sm">
+    <div
+      class="flex h-16 flex-shrink-0 items-center border-b border-slate-200 dark:border-slate-700 transition-all duration-300"
+      :class="collapsed ? 'justify-center px-0' : 'gap-3 px-5'"
+    >
+      <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-indigo-600 shadow-sm">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       </div>
-      <div>
-        <p class="text-base font-bold text-slate-900 dark:text-slate-100">404NFID</p>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Starter Kit</p>
+      <div v-if="!collapsed" class="overflow-hidden">
+        <p class="text-base font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap">404NFID</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Starter Kit</p>
       </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto px-3 py-4">
+    <nav class="flex-1 overflow-y-auto py-4 transition-all duration-300" :class="collapsed ? 'px-2' : 'px-3'">
       <div class="space-y-0.5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+        <p
+          v-if="!collapsed"
+          class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500"
+        >
           {{ $t('nav.main') }}
         </p>
+        <div v-else class="mb-2 h-[18px]" />
 
         <NuxtLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
+          :title="collapsed ? item.label : undefined"
           :class="[
-            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
+            'flex items-center rounded-lg py-2 text-sm font-medium transition-all duration-150',
+            collapsed ? 'justify-center px-0' : 'gap-3 px-3',
             isActive(item.to)
               ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
           ]"
-          @click="emit('close')"
+          @click="closeMobile"
         >
           <svg
             :class="['h-5 w-5 flex-shrink-0', isActive(item.to) ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500']"
@@ -127,27 +131,33 @@ function isActive(to: string) {
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
           </svg>
-          {{ item.label }}
+          <span v-if="!collapsed" class="whitespace-nowrap overflow-hidden">{{ item.label }}</span>
         </NuxtLink>
       </div>
 
       <!-- Admin section -->
       <div v-if="authStore.isSuperAdmin" class="mt-6 space-y-0.5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+        <p
+          v-if="!collapsed"
+          class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500"
+        >
           {{ $t('nav.administration') }}
         </p>
+        <div v-else class="mb-2 h-[18px]" />
 
         <NuxtLink
           v-for="item in adminNavItems"
           :key="item.to"
           :to="item.to"
+          :title="collapsed ? item.label : undefined"
           :class="[
-            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
+            'flex items-center rounded-lg py-2 text-sm font-medium transition-all duration-150',
+            collapsed ? 'justify-center px-0' : 'gap-3 px-3',
             isActive(item.to)
               ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
           ]"
-          @click="emit('close')"
+          @click="closeMobile"
         >
           <svg
             :class="['h-5 w-5 flex-shrink-0', isActive(item.to) ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500']"
@@ -158,20 +168,25 @@ function isActive(to: string) {
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
           </svg>
-          {{ item.label }}
+          <span v-if="!collapsed" class="whitespace-nowrap overflow-hidden">{{ item.label }}</span>
         </NuxtLink>
       </div>
     </nav>
 
-    <!-- User info at bottom -->
-    <div class="border-t border-slate-200 p-3 dark:border-slate-700">
-      <div class="flex items-center gap-3 rounded-lg px-2 py-2">
+    <!-- Bottom section -->
+    <div class="flex-shrink-0 border-t border-slate-200 p-3 dark:border-slate-700">
+      <!-- User info -->
+      <div
+        class="flex items-center rounded-lg px-2 py-2 transition-all duration-300"
+        :class="collapsed ? 'justify-center' : 'gap-3'"
+        :title="collapsed ? (authStore.user?.display_name || `${authStore.user?.first_name} ${authStore.user?.last_name}`) : undefined"
+      >
         <AppAvatar
           :src="authStore.user?.avatar_url"
           :name="authStore.user?.display_name || `${authStore.user?.first_name} ${authStore.user?.last_name}`"
           size="sm"
         />
-        <div class="flex-1 min-w-0">
+        <div v-if="!collapsed" class="flex-1 min-w-0">
           <p class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
             {{ authStore.user?.display_name || `${authStore.user?.first_name} ${authStore.user?.last_name}` }}
           </p>

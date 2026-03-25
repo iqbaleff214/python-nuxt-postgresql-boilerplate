@@ -1,16 +1,15 @@
 <script setup lang="ts">
-const sidebarOpen = ref(false)
 </script>
 
 <template>
   <div class="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
     <!-- Sidebar -->
-    <AppSidebar :open="sidebarOpen" @close="sidebarOpen = false" />
+    <AppSidebar />
 
     <!-- Main content area -->
     <div class="flex min-w-0 flex-1 flex-col">
       <!-- Header -->
-      <AppHeader @toggle-sidebar="sidebarOpen = !sidebarOpen" />
+      <AppHeader />
 
       <!-- Page content -->
       <main class="flex-1 overflow-y-auto">
