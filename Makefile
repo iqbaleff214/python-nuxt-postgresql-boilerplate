@@ -1,4 +1,4 @@
-.PHONY: help dev prod down logs migrate seed gen-key
+.PHONY: help dev prod prod-traefik prod-traefik-down prod-traefik-logs down logs migrate seed gen-key
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -18,6 +18,15 @@ prod: ## Start production stack
 
 prod-down: ## Stop production stack
 	docker compose down
+
+prod-traefik: ## Start production stack with Traefik (requires .env.prod)
+	docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
+
+prod-traefik-down: ## Stop Traefik production stack
+	docker compose -f docker-compose.prod.yml --env-file .env.prod down
+
+prod-traefik-logs: ## Tail logs from Traefik production stack
+	docker compose -f docker-compose.prod.yml --env-file .env.prod logs -f
 
 logs: ## Tail logs from all dev services
 	docker compose -f docker-compose.dev.yml logs -f

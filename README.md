@@ -85,7 +85,8 @@ This starts: **frontend** (3000) · **backend** (8000) · **PostgreSQL** (5432) 
 │   │   ├── jobs/          # ARQ background jobs
 │   │   ├── templates/     # Jinja2 email templates
 │   │   └── migrations/    # Alembic migrations
-├── docker-compose.yml     # Production
+├── docker-compose.yml     # Simple production (no reverse proxy)
+├── docker-compose.prod.yml # Production with Traefik
 ├── docker-compose.dev.yml # Development (with dev tools)
 ├── .env.example           # Environment variable template
 ├── Makefile               # Convenience commands
@@ -162,22 +163,27 @@ See [`.env.example`](.env.example) for full reference with descriptions.
 ## Makefile Commands
 
 ```bash
-make help          # Show all commands
-make dev           # Start dev stack
-make down          # Stop dev stack
-make logs          # Tail all logs
-make migrate       # Run Alembic migrations
-make gen-key       # Generate TOTP_ENCRYPTION_KEY
-make shell-be      # Shell into backend container
-make shell-db      # Open psql
-make mailhog       # Open MailHog UI
-make minio         # Open MinIO console
-make docs          # Open Swagger UI
+make help                # Show all commands
+make dev                 # Start dev stack
+make down                # Stop dev stack
+make logs                # Tail all logs
+make migrate             # Run Alembic migrations
+make gen-key             # Generate TOTP_ENCRYPTION_KEY
+make shell-be            # Shell into backend container
+make shell-db            # Open psql
+make mailhog             # Open MailHog UI
+make minio               # Open MinIO console
+make docs                # Open Swagger UI
+make prod-traefik        # Start production stack with Traefik
+make prod-traefik-down   # Stop Traefik production stack
+make prod-traefik-logs   # Tail logs from Traefik production stack
 ```
 
 ---
 
 ## Production Deployment
+
+### Option A — Simple (no reverse proxy)
 
 1. Copy `.env.example` to `.env` and fill in all production values:
    - Strong `SECRET_KEY` and `TOTP_ENCRYPTION_KEY`
@@ -186,12 +192,64 @@ make docs          # Open Swagger UI
    - Real S3 credentials (`STORAGE_BACKEND=s3`)
    - Set `APP_ENV=production` and `DEBUG=false`
 
-2. Start the production stack:
+2. Start the stack:
    ```bash
    docker compose up --build -d
    ```
 
 3. Migrations run automatically on backend startup.
+
+### Option B — With Traefik (recommended)
+
+This option puts all services behind a shared Traefik reverse proxy that handles TLS termination via Let's Encrypt. Multiple apps can share the same Traefik instance on one server.
+
+#### Prerequisites
+- A domain pointing to your server
+- The shared Traefik instance running (see `traefik/`)
+
+#### 1. Start Traefik (once per server)
+
+```bash
+cd traefik/
+cp .env.example .env          # set TRAEFIK_DOMAIN and ACME_EMAIL
+docker compose up -d
+cd ..
+```
+
+#### 2. Configure environment
+
+```bash
+# Backend secrets
+cp backend/.env.example backend/.env
+# Edit backend/.env — fill in SECRET_KEY, TOTP_ENCRYPTION_KEY, DATABASE_URL,
+# REDIS_URL (use redis://:PASSWORD@redis:6379/0), email, S3, etc.
+
+# Compose-level vars (domain + postgres/redis passwords)
+cp .env.example .env.prod
+# Edit .env.prod — at minimum set: DOMAIN, POSTGRES_PASSWORD, REDIS_PASSWORD
+```
+
+#### 3. Deploy
+
+```bash
+make prod-traefik
+# or: docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
+```
+
+#### 4. Access
+
+| Service | URL |
+|---|---|
+| Frontend | `https://yourdomain.com` |
+| API | `https://yourdomain.com/api/v1` |
+| API docs | `https://yourdomain.com/api/v1/docs` |
+| Traefik dashboard | `https://traefik.yourdomain.com` |
+
+#### Teardown
+
+```bash
+make prod-traefik-down
+```
 
 ---
 

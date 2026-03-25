@@ -1,0 +1,165 @@
+# Requires the shared Traefik instance to be running first:
+#   cd traefik/ && docker compose up -d
+#
+# Setup:
+#   1. Copy backend/.env.example → backend/.env and fill in all secrets.
+#   2. Copy .env.example → .env.prod and set DOMAIN + frontend vars.
+#   3. docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+#
+# The `traefik_public` network is created and owned by traefik/docker-compose.yml.
+# This compose only declares it as external — it never creates or destroys it.
+#
+# Each app on the server must use a unique router/service name in its labels
+# to avoid conflicts with other apps sharing the same Traefik instance.
+# Convention used here: prefix with the app slug (e.g. "nuxtapi-api", "nuxtapi-fe").
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+
+  # ─── PostgreSQL ─────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    <<: *restart
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-myapp}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-myapp}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ─── Redis ──────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    <<: *restart
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ─── Backend API ────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    <<: *restart
+    env_file: ./backend/.env
+    environment:
+      APP_ENV: production
+      FRONTEND_URL: https://${DOMAIN}
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - traefik_public   # reachable by Traefik
+      - backend_net      # reachable by db + redis
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+
+      # Tell Traefik which network to use when this container is on multiple networks
+      - "traefik.docker.network=traefik_public"
+
+      # ── Router: /api/* and /uploads/* → this backend ─────────────────────────
+      # Router name "nuxtapi-api" is unique to this app on the shared Traefik.
+      - "traefik.http.routers.nuxtapi-api.rule=Host(`${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/uploads`))"
+      - "traefik.http.routers.nuxtapi-api.entrypoints=websecure"
+      - "traefik.http.routers.nuxtapi-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nuxtapi-api.service=nuxtapi-api-svc"
+      - "traefik.http.routers.nuxtapi-api.middlewares=security-headers@docker"
+
+      # ── Service: forward to port 8000 ────────────────────────────────────────
+      - "traefik.http.services.nuxtapi-api-svc.loadbalancer.server.port=8000"
+
+      # Sticky sessions keep WebSocket connections on the same container replica
+      - "traefik.http.services.nuxtapi-api-svc.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.nuxtapi-api-svc.loadbalancer.sticky.cookie.name=__nuxtapi_sticky"
+      - "traefik.http.services.nuxtapi-api-svc.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.nuxtapi-api-svc.loadbalancer.sticky.cookie.httpOnly=true"
+
+  # ─── Background Worker ──────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["python", "-m", "arq", "app.jobs.worker_settings.WorkerSettings"]
+    <<: *restart
+    env_file: ./backend/.env
+    environment:
+      APP_ENV: production
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - backend_net   # no Traefik exposure needed
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ─── Nuxt.js Frontend ───────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    <<: *restart
+    environment:
+      NODE_ENV: production
+      NUXT_PUBLIC_API_BASE: https://${DOMAIN}/api/v1
+      NUXT_PUBLIC_WS_BASE: wss://${DOMAIN}
+    networks:
+      - traefik_public   # reachable by Traefik only
+    depends_on:
+      backend:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_public"
+
+      # ── Router: /* → frontend ─────────────────────────────────────────────────
+      # Priority 1 (lowest) so /api/* and /uploads/* are matched by backend first.
+      - "traefik.http.routers.nuxtapi-fe.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.nuxtapi-fe.entrypoints=websecure"
+      - "traefik.http.routers.nuxtapi-fe.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nuxtapi-fe.service=nuxtapi-fe-svc"
+      - "traefik.http.routers.nuxtapi-fe.priority=1"
+      - "traefik.http.routers.nuxtapi-fe.middlewares=security-headers@docker"
+
+      - "traefik.http.services.nuxtapi-fe-svc.loadbalancer.server.port=3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
+
+networks:
+  # Shared public network — created by traefik/docker-compose.yml, NOT here.
+  traefik_public:
+    external: true
+
+  # Private network for db, Redis, and worker — never exposed to Traefik.
+  backend_net:
+    internal: true
