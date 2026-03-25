@@ -7,6 +7,7 @@ const authStore = useAuthStore()
 const api = useApi()
 const toast = useToast()
 const router = useRouter()
+const { t } = useI18n()
 
 const isRegenerate = computed(() => authStore.user?.is_2fa_enabled)
 
@@ -49,7 +50,7 @@ async function initSetup() {
     qrCodeSrc.value = response.data.qr_code_base64
     manualSecret.value = response.data.secret
   } else {
-    toast.error(response.message || 'Failed to initialize 2FA setup')
+    toast.error(response.message || t('twoFASetup.initFailed'))
     router.push('/profile/security')
   }
   isLoading.value = false
@@ -57,7 +58,7 @@ async function initSetup() {
 
 async function verifyAndEnable() {
   if (otpCode.value.length !== 6) {
-    otpError.value = 'Please enter the 6-digit code'
+    otpError.value = t('twoFASetup.enter6Digit')
     return
   }
 
@@ -74,7 +75,7 @@ async function verifyAndEnable() {
     await authStore.fetchMe()
     step.value = 3
   } else {
-    otpError.value = response.message || 'Invalid code. Please try again.'
+    otpError.value = response.message || t('twoFASetup.invalidCode')
     otpCode.value = ''
   }
   isVerifying.value = false
@@ -82,11 +83,11 @@ async function verifyAndEnable() {
 
 async function handleRegen() {
   if (!regenPassword.value) {
-    toast.error('Please enter your password')
+    toast.error(t('twoFASetup.enterPassword'))
     return
   }
   if (regenOtp.value.length !== 6) {
-    regenOtpError.value = 'Please enter the 6-digit code from your authenticator app'
+    regenOtpError.value = t('twoFASetup.enter6DigitRegen')
     return
   }
 
@@ -102,7 +103,7 @@ async function handleRegen() {
     recoveryCodes.value = response.data.recovery_codes
     regenDone.value = true
   } else {
-    toast.error(response.message || 'Failed to regenerate codes')
+    toast.error(response.message || t('twoFASetup.regenFailed'))
   }
   isRegening.value = false
 }
@@ -110,7 +111,7 @@ async function handleRegen() {
 async function copyAllCodes() {
   await navigator.clipboard.writeText(recoveryCodes.value.join('\n'))
   codesCopied.value = true
-  toast.success('Recovery codes copied!')
+  toast.success(t('twoFASetup.codesCopied'))
   setTimeout(() => { codesCopied.value = false }, 3000)
 }
 
@@ -123,10 +124,10 @@ function finish() {
   <div class="space-y-6">
     <div>
       <h1 class="text-2xl font-bold text-slate-900">
-        {{ isRegenerate ? 'Regenerate recovery codes' : 'Set up two-factor authentication' }}
+        {{ isRegenerate ? $t('twoFASetup.regenTitle') : $t('twoFASetup.setupTitle') }}
       </h1>
       <p class="mt-0.5 text-sm text-slate-500">
-        {{ isRegenerate ? 'Generate new recovery codes — your old ones will be invalidated.' : 'Follow the steps to enable 2FA on your account.' }}
+        {{ isRegenerate ? $t('twoFASetup.regenSubtitle') : $t('twoFASetup.setupSubtitle') }}
       </p>
     </div>
 
@@ -153,51 +154,51 @@ function finish() {
       </div>
 
       <!-- Step 1: Scan QR -->
-      <AppCard v-else-if="step === 1" title="Step 1: Scan QR code" subtitle="Use your authenticator app to scan this code">
+      <AppCard v-else-if="step === 1" :title="$t('twoFASetup.step1Title')" :subtitle="$t('twoFASetup.step1Subtitle')">
         <div class="space-y-4">
           <div class="flex flex-col items-center gap-4">
             <div class="rounded-xl border-2 border-slate-200 p-3 bg-white">
               <img :src="qrCodeSrc" alt="QR Code" class="h-48 w-48" />
             </div>
             <div class="w-full rounded-lg bg-slate-50 border border-slate-200 p-3">
-              <p class="mb-1 text-xs font-medium text-slate-500">Can't scan? Enter this key manually:</p>
+              <p class="mb-1 text-xs font-medium text-slate-500">{{ $t('twoFASetup.cantScan') }}</p>
               <p class="font-mono text-sm text-slate-800 break-all select-all">{{ manualSecret }}</p>
             </div>
             <AppAlert variant="info" class="w-full">
-              Open Google Authenticator, Authy, or any TOTP app and scan this QR code.
+              {{ $t('twoFASetup.scanInfo') }}
             </AppAlert>
           </div>
           <div class="flex justify-end">
             <AppButton variant="primary" @click="step = 2">
-              I've scanned it &rarr;
+              {{ $t('twoFASetup.scannedIt') }} &rarr;
             </AppButton>
           </div>
         </div>
       </AppCard>
 
       <!-- Step 2: Verify TOTP -->
-      <AppCard v-else-if="step === 2" title="Step 2: Verify your setup" subtitle="Enter the 6-digit code from your authenticator app">
+      <AppCard v-else-if="step === 2" :title="$t('twoFASetup.step2Title')" :subtitle="$t('twoFASetup.step2Subtitle')">
         <div class="space-y-5">
           <OtpInput v-model="otpCode" :disabled="isVerifying" :error="otpError" />
           <div class="flex items-center justify-between gap-3">
-            <AppButton variant="ghost" @click="step = 1">&larr; Back</AppButton>
+            <AppButton variant="ghost" @click="step = 1">&larr; {{ $t('twoFASetup.back') }}</AppButton>
             <AppButton
               variant="primary"
               :loading="isVerifying"
               :disabled="otpCode.length !== 6"
               @click="verifyAndEnable"
             >
-              Verify &amp; enable
+              {{ $t('twoFASetup.verifyEnable') }}
             </AppButton>
           </div>
         </div>
       </AppCard>
 
       <!-- Step 3: Recovery codes -->
-      <AppCard v-else-if="step === 3" title="Save your recovery codes" subtitle="Store these somewhere safe — you won't see them again">
+      <AppCard v-else-if="step === 3" :title="$t('twoFASetup.step3Title')" :subtitle="$t('twoFASetup.step3Subtitle')">
         <div class="space-y-4">
           <AppAlert variant="warning">
-            <strong>Important:</strong> If you lose your authenticator app, these codes are the only way back in.
+            <strong>{{ $t('common.confirm') }}:</strong> {{ $t('twoFASetup.importantCodes') }}
           </AppAlert>
           <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
             <div class="grid grid-cols-2 gap-2">
@@ -212,12 +213,12 @@ function finish() {
           </div>
           <div class="flex flex-wrap gap-3">
             <AppButton variant="outline" @click="copyAllCodes">
-              {{ codesCopied ? 'Copied!' : 'Copy all codes' }}
+              {{ codesCopied ? $t('twoFASetup.copied') : $t('twoFASetup.copyAll') }}
             </AppButton>
           </div>
           <div class="border-t border-slate-200 pt-4 flex justify-end">
             <AppButton variant="primary" @click="finish">
-              I've saved my codes
+              {{ $t('twoFASetup.savedCodes') }}
             </AppButton>
           </div>
         </div>
@@ -227,41 +228,41 @@ function finish() {
     <!-- ── REGEN FLOW ── -->
     <template v-else>
       <!-- Confirm identity -->
-      <AppCard v-if="!regenDone" title="Confirm your identity" subtitle="Verify who you are before generating new codes">
+      <AppCard v-if="!regenDone" :title="$t('twoFASetup.confirmTitle')" :subtitle="$t('twoFASetup.confirmSubtitle')">
         <div class="max-w-md space-y-4">
           <AppAlert variant="warning">
-            Your existing recovery codes will be <strong>permanently invalidated</strong> and replaced with new ones.
+            {{ $t('twoFASetup.confirmWarning') }}
           </AppAlert>
 
           <AppInput
             v-model="regenPassword"
-            label="Current password"
+            :label="$t('twoFASetup.currentPassword')"
             type="password"
-            placeholder="Enter your password"
+            :placeholder="$t('twoFASetup.currentPasswordPlaceholder')"
             required
           />
 
           <div>
             <label class="mb-1.5 block text-sm font-medium text-slate-700">
-              Authenticator code <span class="text-red-500">*</span>
+              {{ $t('security.authenticatorCode') }} <span class="text-red-500">*</span>
             </label>
             <OtpInput v-model="regenOtp" :error="regenOtpError" />
           </div>
 
           <div class="flex justify-end gap-3 pt-2">
-            <AppButton variant="secondary" @click="router.push('/profile/security')">Cancel</AppButton>
+            <AppButton variant="secondary" @click="router.push('/profile/security')">{{ $t('twoFASetup.cancel') }}</AppButton>
             <AppButton variant="primary" :loading="isRegening" @click="handleRegen">
-              Generate new codes
+              {{ $t('twoFASetup.generateCodes') }}
             </AppButton>
           </div>
         </div>
       </AppCard>
 
       <!-- New codes -->
-      <AppCard v-else title="Your new recovery codes" subtitle="Save these — your old codes no longer work">
+      <AppCard v-else :title="$t('twoFASetup.newCodesTitle')" :subtitle="$t('twoFASetup.newCodesSubtitle')">
         <div class="space-y-4">
           <AppAlert variant="warning">
-            <strong>Save these now.</strong> You won't be able to see them again.
+            <strong>{{ $t('common.confirm') }}:</strong> {{ $t('twoFASetup.saveNow') }}
           </AppAlert>
           <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
             <div class="grid grid-cols-2 gap-2">
@@ -276,11 +277,11 @@ function finish() {
           </div>
           <div class="flex flex-wrap gap-3">
             <AppButton variant="outline" @click="copyAllCodes">
-              {{ codesCopied ? 'Copied!' : 'Copy all codes' }}
+              {{ codesCopied ? $t('twoFASetup.copied') : $t('twoFASetup.copyAll') }}
             </AppButton>
           </div>
           <div class="border-t border-slate-200 pt-4 flex justify-end">
-            <AppButton variant="primary" @click="finish">Done</AppButton>
+            <AppButton variant="primary" @click="finish">{{ $t('twoFASetup.done') }}</AppButton>
           </div>
         </div>
       </AppCard>

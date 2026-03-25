@@ -5,6 +5,7 @@ definePageMeta({ middleware: 'auth' })
 
 const notifStore = useNotificationsStore()
 const toast = useToast()
+const { t } = useI18n()
 
 const filter = ref<'all' | 'unread'>('all')
 const isLoading = ref(false)
@@ -20,7 +21,7 @@ async function loadPage(page: number) {
 
 async function handleMarkAllRead() {
   await notifStore.markAllRead()
-  toast.success('All notifications marked as read')
+  toast.success(t('notifications.markedAllRead'))
 }
 
 async function handleMarkRead(id: string) {
@@ -37,9 +38,9 @@ onMounted(() => loadPage(1))
     <!-- Header -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">Notifications</h1>
+        <h1 class="text-2xl font-bold text-slate-900">{{ $t('notifications.title') }}</h1>
         <p class="mt-0.5 text-sm text-slate-500">
-          {{ notifStore.unreadCount > 0 ? `${notifStore.unreadCount} unread` : 'All caught up!' }}
+          {{ notifStore.unreadCount > 0 ? $t('notifications.unread', { n: notifStore.unreadCount }) : $t('notifications.allCaughtUp') }}
         </p>
       </div>
 
@@ -53,7 +54,7 @@ onMounted(() => loadPage(1))
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Mark all read
+          {{ $t('notifications.markAllRead') }}
         </AppButton>
       </div>
     </div>
@@ -61,7 +62,7 @@ onMounted(() => loadPage(1))
     <!-- Filter tabs -->
     <div class="flex gap-1 rounded-xl bg-slate-100 p-1 w-fit">
       <button
-        v-for="opt in [{ value: 'all', label: 'All' }, { value: 'unread', label: 'Unread' }]"
+        v-for="opt in [{ value: 'all', label: $t('notifications.all') }, { value: 'unread', label: $t('notifications.unreadTab') }]"
         :key="opt.value"
         type="button"
         :class="[
@@ -94,10 +95,10 @@ onMounted(() => loadPage(1))
         </svg>
         <div class="text-center">
           <p class="font-medium text-slate-700">
-            {{ filter === 'unread' ? 'No unread notifications' : 'No notifications yet' }}
+            {{ filter === 'unread' ? $t('notifications.noUnread') : $t('notifications.noNotifs') }}
           </p>
           <p class="text-sm text-slate-400 mt-0.5">
-            {{ filter === 'unread' ? 'You\'re all caught up!' : 'Notifications will appear here when you receive them.' }}
+            {{ filter === 'unread' ? $t('notifications.caughtUp') : $t('notifications.willAppear') }}
           </p>
         </div>
         <button
@@ -106,7 +107,7 @@ onMounted(() => loadPage(1))
           class="text-sm font-medium text-indigo-600 hover:text-indigo-700"
           @click="filter = 'all'"
         >
-          View all notifications
+          {{ $t('notifications.viewAll') }}
         </button>
       </div>
 

@@ -4,6 +4,7 @@ import { onClickOutside } from '@vueuse/core'
 
 const authStore = useAuthStore()
 const router = useRouter()
+useI18n()
 const userMenuRef = ref<HTMLElement | null>(null)
 const isUserMenuOpen = ref(false)
 
@@ -35,7 +36,7 @@ async function handleLogout() {
       </svg>
     </button>
 
-    <!-- Logo / App name -->
+    <!-- Logo / App name (mobile only) -->
     <NuxtLink to="/dashboard" class="flex items-center gap-2 lg:hidden">
       <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,11 +50,9 @@ async function handleLogout() {
     <div class="flex-1" />
 
     <!-- Right side actions -->
-    <div class="flex items-center gap-2">
-      <!-- Theme Toggle -->
+    <div class="flex items-center gap-1">
       <ThemeToggle />
-
-      <!-- Notification Bell -->
+      <LanguageSwitcher />
       <NotificationBell />
 
       <!-- User Menu -->
@@ -68,7 +67,7 @@ async function handleLogout() {
             :name="userName"
             size="sm"
           />
-          <span class="hidden font-medium text-slate-700 sm:block">{{ userName }}</span>
+          <span class="hidden font-medium text-slate-700 sm:block dark:text-slate-300">{{ userName }}</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
@@ -99,7 +98,7 @@ async function handleLogout() {
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              Profile
+              {{ $t('nav.profile') }}
             </NuxtLink>
 
             <NuxtLink
@@ -110,7 +109,7 @@ async function handleLogout() {
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              Security
+              {{ $t('nav.security') }}
             </NuxtLink>
 
             <div class="my-1 border-t border-slate-100 dark:border-slate-700" />
@@ -123,7 +122,7 @@ async function handleLogout() {
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              Sign out
+              {{ $t('nav.signOut') }}
             </button>
           </div>
         </Transition>

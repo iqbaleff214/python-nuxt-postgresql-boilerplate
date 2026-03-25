@@ -9,13 +9,14 @@ definePageMeta({ layout: 'auth', middleware: 'guest' })
 const authStore = useAuthStore()
 const router = useRouter()
 const toast = useToast()
+const { t } = useI18n()
 
-const schema = toTypedSchema(
+const schema = computed(() => toTypedSchema(
   z.object({
-    email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(1, 'Password is required'),
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(1, t('validation.passwordRequired')),
   })
-)
+))
 
 const { handleSubmit, errors, isSubmitting } = useForm({ validationSchema: schema })
 const { value: email } = useField<string>('email')
@@ -30,11 +31,11 @@ const onSubmit = handleSubmit(async (values) => {
     if (result.mfaRequired) {
       router.push('/login/2fa')
     } else {
-      toast.success('Welcome back!')
+      toast.success(t('auth.login.welcomeBack'))
       router.push('/dashboard')
     }
   } catch (err: any) {
-    apiError.value = err.message || 'Login failed. Please try again.'
+    apiError.value = err.message || t('auth.login.failed')
   }
 })
 </script>
@@ -42,8 +43,8 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <div>
     <div class="mb-6 text-center">
-      <h2 class="text-2xl font-bold text-slate-900">Sign in</h2>
-      <p class="mt-1 text-sm text-slate-500">Welcome back! Please enter your credentials.</p>
+      <h2 class="text-2xl font-bold text-slate-900">{{ $t('auth.login.title') }}</h2>
+      <p class="mt-1 text-sm text-slate-500">{{ $t('auth.login.subtitle') }}</p>
     </div>
 
     <AppAlert v-if="apiError" variant="error" class="mb-4" dismissible @dismiss="apiError = ''">
@@ -53,7 +54,7 @@ const onSubmit = handleSubmit(async (values) => {
     <form class="space-y-4" @submit="onSubmit">
       <AppInput
         v-model="email"
-        label="Email address"
+        :label="$t('auth.login.email')"
         type="email"
         placeholder="you@example.com"
         :error="errors.email"
@@ -64,7 +65,7 @@ const onSubmit = handleSubmit(async (values) => {
       <div>
         <AppInput
           v-model="password"
-          label="Password"
+          :label="$t('auth.login.password')"
           type="password"
           placeholder="••••••••"
           :error="errors.password"
@@ -73,7 +74,7 @@ const onSubmit = handleSubmit(async (values) => {
         />
         <div class="mt-1 text-right">
           <NuxtLink to="/forgot-password" class="text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
-            Forgot password?
+            {{ $t('auth.login.forgotPassword') }}
           </NuxtLink>
         </div>
       </div>
@@ -85,14 +86,14 @@ const onSubmit = handleSubmit(async (values) => {
         class="w-full"
         :loading="isSubmitting"
       >
-        Sign in
+        {{ $t('auth.login.submit') }}
       </AppButton>
     </form>
 
     <p class="mt-6 text-center text-sm text-slate-500">
-      Don't have an account?
+      {{ $t('auth.login.noAccount') }}
       <NuxtLink to="/register" class="font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
-        Create account
+        {{ $t('auth.login.createAccount') }}
       </NuxtLink>
     </p>
   </div>

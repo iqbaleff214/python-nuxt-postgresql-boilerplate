@@ -6,9 +6,9 @@ const menuRef = ref<HTMLElement | null>(null)
 onClickOutside(menuRef, () => { isOpen.value = false })
 
 const options = [
-  { value: 'light' as const, label: 'Light' },
-  { value: 'dark' as const, label: 'Dark' },
-  { value: 'system' as const, label: 'System' },
+  { value: 'light' as const },
+  { value: 'dark' as const },
+  { value: 'system' as const },
 ]
 </script>
 
@@ -17,7 +17,7 @@ const options = [
     <button
       type="button"
       class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-      :title="`Theme: ${mode}`"
+      :title="`${$t('theme.' + mode)}`"
       @click="isOpen = !isOpen"
     >
       <!-- Sun icon (light) -->
@@ -70,7 +70,7 @@ const options = [
           <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
-          {{ opt.label }}
+          {{ $t(`theme.${opt.value}`) }}
         </button>
       </div>
     </Transition>

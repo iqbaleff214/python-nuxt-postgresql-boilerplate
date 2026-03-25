@@ -3,6 +3,7 @@ definePageMeta({ middleware: 'superadmin', layout: 'admin' })
 
 const api = useApi()
 const toast = useToast()
+const { t } = useI18n()
 
 const form = reactive({
   title: '',
@@ -15,15 +16,15 @@ const apiError = ref('')
 const showConfirmModal = ref(false)
 const sent = ref(false)
 
-const targetOptions = [
-  { value: '', label: 'All users' },
-  { value: 'user', label: 'Regular users only' },
-  { value: 'superadmin', label: 'Admins only' },
-]
+const targetOptions = computed(() => [
+  { value: '', label: t('admin.announcements.allUsers') },
+  { value: 'user', label: t('admin.announcements.regularOnly') },
+  { value: 'superadmin', label: t('admin.announcements.adminsOnly') },
+])
 
 function validateForm() {
-  if (!form.title.trim()) return 'Title is required'
-  if (!form.message.trim()) return 'Message is required'
+  if (!form.title.trim()) return t('admin.announcements.titleRequired')
+  if (!form.message.trim()) return t('admin.announcements.messageRequired')
   return null
 }
 
@@ -51,9 +52,9 @@ async function confirmSend() {
 
   if (response.success) {
     sent.value = true
-    toast.success('Announcement sent successfully!')
+    toast.success(t('admin.announcements.success'))
   } else {
-    apiError.value = response.message || 'Failed to send announcement'
+    apiError.value = response.message || t('admin.announcements.failed')
   }
   isSending.value = false
 }
@@ -63,14 +64,20 @@ function resetForm() {
   sent.value = false
   apiError.value = ''
 }
+
+const confirmTarget = computed(() => {
+  if (form.target_role === 'user') return t('admin.announcements.regularTarget')
+  if (form.target_role === 'superadmin') return t('admin.announcements.adminTarget')
+  return t('admin.announcements.allUsersTarget')
+})
 </script>
 
 <template>
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Announcements</h1>
-      <p class="mt-0.5 text-sm text-slate-500">Broadcast messages to your users</p>
+      <h1 class="text-2xl font-bold text-slate-900">{{ $t('admin.announcements.title') }}</h1>
+      <p class="mt-0.5 text-sm text-slate-500">{{ $t('admin.announcements.subtitle') }}</p>
     </div>
 
     <!-- Success state -->
@@ -82,16 +89,16 @@ function resetForm() {
           </svg>
         </div>
         <div class="text-center">
-          <h3 class="text-lg font-bold text-slate-900">Announcement sent!</h3>
-          <p class="mt-1 text-sm text-slate-500">Your announcement has been delivered to all targeted users.</p>
+          <h3 class="text-lg font-bold text-slate-900">{{ $t('admin.announcements.sentTitle') }}</h3>
+          <p class="mt-1 text-sm text-slate-500">{{ $t('admin.announcements.sentMsg') }}</p>
         </div>
-        <AppButton variant="primary" @click="resetForm">Send another announcement</AppButton>
+        <AppButton variant="primary" @click="resetForm">{{ $t('admin.announcements.sendAnother') }}</AppButton>
       </div>
     </AppCard>
 
     <div v-else class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <!-- Form -->
-      <AppCard title="Compose announcement">
+      <AppCard :title="$t('admin.announcements.compose')">
         <AppAlert v-if="apiError" variant="error" class="mb-4" dismissible @dismiss="apiError = ''">
           {{ apiError }}
         </AppAlert>
@@ -99,21 +106,21 @@ function resetForm() {
         <form class="space-y-4" @submit.prevent="handleSend">
           <AppInput
             v-model="form.title"
-            label="Announcement title"
-            placeholder="e.g. System maintenance scheduled"
+            :label="$t('admin.announcements.announcementTitle')"
+            :placeholder="$t('admin.announcements.titlePlaceholder')"
             required
           />
 
           <AppSelect
             v-model="form.target_role"
-            label="Send to"
+            :label="$t('admin.announcements.sendTo')"
             :options="targetOptions"
           />
 
           <AppTextarea
             v-model="form.message"
-            label="Message"
-            placeholder="Write your announcement message here..."
+            :label="$t('admin.announcements.message')"
+            :placeholder="$t('admin.announcements.messagePlaceholder')"
             :rows="6"
             required
           />
@@ -128,7 +135,7 @@ function resetForm() {
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
-              Send announcement
+              {{ $t('admin.announcements.send') }}
             </AppButton>
           </div>
         </form>
@@ -136,7 +143,7 @@ function resetForm() {
 
       <!-- Preview -->
       <div class="space-y-4">
-        <AppCard title="Preview">
+        <AppCard :title="$t('admin.announcements.preview')">
           <div v-if="form.title || form.message" class="rounded-xl border border-indigo-200 bg-indigo-50 p-4">
             <div class="flex items-start gap-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 flex-shrink-0">
@@ -145,11 +152,11 @@ function resetForm() {
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="font-semibold text-indigo-900">{{ form.title || 'Announcement title...' }}</p>
-                <p class="mt-1 text-sm text-indigo-700 whitespace-pre-wrap">{{ form.message || 'Your message will appear here...' }}</p>
+                <p class="font-semibold text-indigo-900">{{ form.title || $t('admin.announcements.announcementTitle') + '...' }}</p>
+                <p class="mt-1 text-sm text-indigo-700 whitespace-pre-wrap">{{ form.message || $t('admin.announcements.messagePlaceholder') }}</p>
                 <div class="mt-2 flex items-center gap-2">
-                  <AppBadge variant="indigo" size="sm">announcement</AppBadge>
-                  <span class="text-xs text-indigo-500">just now</span>
+                  <AppBadge variant="indigo" size="sm">{{ $t('admin.announcements.announcement') }}</AppBadge>
+                  <span class="text-xs text-indigo-500">{{ $t('admin.announcements.justNow') }}</span>
                 </div>
               </div>
             </div>
@@ -159,7 +166,7 @@ function resetForm() {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
-            <p class="text-sm">Preview will appear here</p>
+            <p class="text-sm">{{ $t('admin.announcements.previewEmpty') }}</p>
           </div>
         </AppCard>
 
@@ -170,12 +177,12 @@ function resetForm() {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div class="text-sm text-slate-600">
-              <p class="font-semibold text-slate-800">How announcements work</p>
+              <p class="font-semibold text-slate-800">{{ $t('admin.announcements.howItWorks') }}</p>
               <ul class="mt-1 space-y-1 text-xs text-slate-500">
-                <li>• Announcements are delivered as notifications</li>
-                <li>• Users receive them in real-time via WebSocket</li>
-                <li>• They also appear in the notification history</li>
-                <li>• Target specific roles or send to everyone</li>
+                <li>• {{ $t('admin.announcements.info1') }}</li>
+                <li>• {{ $t('admin.announcements.info2') }}</li>
+                <li>• {{ $t('admin.announcements.info3') }}</li>
+                <li>• {{ $t('admin.announcements.info4') }}</li>
               </ul>
             </div>
           </div>
@@ -184,11 +191,10 @@ function resetForm() {
     </div>
 
     <!-- Confirm modal -->
-    <AppModal v-model="showConfirmModal" title="Send announcement?" size="sm">
+    <AppModal v-model="showConfirmModal" :title="$t('admin.announcements.confirmTitle')" size="sm">
       <div class="space-y-3">
         <p class="text-sm text-slate-600">
-          You are about to send an announcement to
-          <strong>{{ form.target_role ? (form.target_role === 'user' ? 'all regular users' : 'all admins') : 'all users' }}</strong>.
+          {{ $t('admin.announcements.confirmMsg', { target: confirmTarget }) }}
         </p>
         <div class="rounded-lg bg-slate-50 p-3 text-sm">
           <p class="font-semibold text-slate-900">{{ form.title }}</p>
@@ -197,9 +203,9 @@ function resetForm() {
       </div>
       <template #footer>
         <div class="flex gap-3 justify-end">
-          <AppButton variant="secondary" @click="showConfirmModal = false">Cancel</AppButton>
+          <AppButton variant="secondary" @click="showConfirmModal = false">{{ $t('common.cancel') }}</AppButton>
           <AppButton variant="primary" :loading="isSending" @click="confirmSend">
-            Send now
+            {{ $t('admin.announcements.sendNow') }}
           </AppButton>
         </div>
       </template>

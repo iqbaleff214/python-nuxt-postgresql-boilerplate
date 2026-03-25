@@ -8,18 +8,19 @@ definePageMeta({ layout: 'auth' })
 const api = useApi()
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const token = route.query.token as string
 
-const schema = toTypedSchema(
+const schema = computed(() => toTypedSchema(
   z.object({
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password: z.string().min(8, t('validation.passwordMin')),
     confirm_password: z.string(),
   }).refine((d) => d.password === d.confirm_password, {
-    message: 'Passwords do not match',
+    message: t('validation.passwordsNoMatch'),
     path: ['confirm_password'],
   })
-)
+))
 
 const { handleSubmit, errors, isSubmitting } = useForm({ validationSchema: schema })
 const { value: password } = useField<string>('password')
@@ -40,7 +41,8 @@ const passwordStrength = computed(() => {
 })
 
 const strengthLabel = computed(() => {
-  return ['', 'Very weak', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength.value] ?? ''
+  const labels = ['', t('password.veryWeak'), t('password.weak'), t('password.fair'), t('password.good'), t('password.strong')]
+  return labels[passwordStrength.value] ?? ''
 })
 
 const strengthColor = computed(() => {
@@ -49,7 +51,7 @@ const strengthColor = computed(() => {
 
 const onSubmit = handleSubmit(async (values) => {
   if (!token) {
-    apiError.value = 'Reset token is missing. Please use the link from your email.'
+    apiError.value = t('auth.resetPassword.tokenMissing')
     return
   }
 
@@ -63,7 +65,7 @@ const onSubmit = handleSubmit(async (values) => {
     success.value = true
     setTimeout(() => router.push('/login'), 3000)
   } else {
-    apiError.value = response.message || 'Failed to reset password. The link may be expired.'
+    apiError.value = response.message || t('auth.resetPassword.failed')
   }
 })
 </script>
@@ -77,10 +79,10 @@ const onSubmit = handleSubmit(async (values) => {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
-      <h2 class="text-2xl font-bold text-slate-900">Password reset!</h2>
-      <p class="mt-2 text-sm text-slate-500">Your password has been reset successfully. Redirecting you to login...</p>
+      <h2 class="text-2xl font-bold text-slate-900">{{ $t('auth.resetPassword.success') }}</h2>
+      <p class="mt-2 text-sm text-slate-500">{{ $t('auth.resetPassword.successMsg') }}</p>
       <NuxtLink to="/login">
-        <AppButton variant="primary" class="mt-4">Go to login</AppButton>
+        <AppButton variant="primary" class="mt-4">{{ $t('auth.resetPassword.goToLogin') }}</AppButton>
       </NuxtLink>
     </div>
 
@@ -91,18 +93,18 @@ const onSubmit = handleSubmit(async (values) => {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Invalid reset link</h2>
-      <p class="mt-2 text-sm text-slate-500">This reset link is invalid or expired. Please request a new one.</p>
+      <h2 class="text-xl font-bold text-slate-900">{{ $t('auth.resetPassword.invalidLink') }}</h2>
+      <p class="mt-2 text-sm text-slate-500">{{ $t('auth.resetPassword.invalidMsg') }}</p>
       <NuxtLink to="/forgot-password">
-        <AppButton variant="primary" class="mt-4">Request new link</AppButton>
+        <AppButton variant="primary" class="mt-4">{{ $t('auth.resetPassword.requestNew') }}</AppButton>
       </NuxtLink>
     </div>
 
     <!-- Form -->
     <div v-else>
       <div class="mb-6">
-        <h2 class="text-2xl font-bold text-slate-900">Reset password</h2>
-        <p class="mt-1 text-sm text-slate-500">Enter your new password below.</p>
+        <h2 class="text-2xl font-bold text-slate-900">{{ $t('auth.resetPassword.title') }}</h2>
+        <p class="mt-1 text-sm text-slate-500">{{ $t('auth.resetPassword.subtitle') }}</p>
       </div>
 
       <AppAlert v-if="apiError" variant="error" class="mb-4" dismissible>
@@ -113,9 +115,9 @@ const onSubmit = handleSubmit(async (values) => {
         <div>
           <AppInput
             v-model="password"
-            label="New password"
+            :label="$t('auth.resetPassword.newPassword')"
             type="password"
-            placeholder="Min. 8 characters"
+            :placeholder="$t('auth.register.passwordPlaceholder')"
             :error="errors.password"
             required
             autocomplete="new-password"
@@ -136,16 +138,16 @@ const onSubmit = handleSubmit(async (values) => {
 
         <AppInput
           v-model="confirmPassword"
-          label="Confirm new password"
+          :label="$t('auth.resetPassword.confirmPassword')"
           type="password"
-          placeholder="Repeat password"
+          :placeholder="$t('auth.register.confirmPasswordPlaceholder')"
           :error="errors.confirm_password"
           required
           autocomplete="new-password"
         />
 
         <AppButton type="submit" variant="primary" size="lg" class="w-full" :loading="isSubmitting">
-          Reset password
+          {{ $t('auth.resetPassword.submit') }}
         </AppButton>
       </form>
     </div>

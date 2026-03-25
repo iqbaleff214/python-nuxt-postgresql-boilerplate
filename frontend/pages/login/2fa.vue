@@ -6,6 +6,7 @@ definePageMeta({ layout: 'auth', middleware: 'mfa' })
 const authStore = useAuthStore()
 const router = useRouter()
 const toast = useToast()
+const { t } = useI18n()
 
 const otpValue = ref('')
 const recoveryCode = ref('')
@@ -16,7 +17,7 @@ const error = ref('')
 async function handleSubmit() {
   const code = useRecovery.value ? recoveryCode.value.trim() : otpValue.value
   if (!code || (!useRecovery.value && code.length !== 6)) {
-    error.value = useRecovery.value ? 'Please enter your recovery code' : 'Please enter the 6-digit code'
+    error.value = useRecovery.value ? t('auth.twoFactor.enterRecovery') : t('auth.twoFactor.enterCode')
     return
   }
 
@@ -25,10 +26,10 @@ async function handleSubmit() {
 
   try {
     await authStore.verify2fa(code, useRecovery.value)
-    toast.success('Authentication successful!')
+    toast.success(t('auth.twoFactor.success'))
     router.push('/dashboard')
   } catch (err: any) {
-    error.value = err.message || 'Verification failed. Please try again.'
+    error.value = err.message || t('auth.twoFactor.failed')
     otpValue.value = ''
   } finally {
     isSubmitting.value = false
@@ -55,9 +56,9 @@ watch(otpValue, (val) => {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       </div>
-      <h2 class="text-2xl font-bold text-slate-900">Two-factor authentication</h2>
+      <h2 class="text-2xl font-bold text-slate-900">{{ $t('auth.twoFactor.title') }}</h2>
       <p class="mt-1 text-sm text-slate-500">
-        {{ useRecovery ? 'Enter one of your recovery codes' : 'Enter the 6-digit code from your authenticator app' }}
+        {{ useRecovery ? $t('auth.twoFactor.useRecovery') : $t('auth.twoFactor.useOtp') }}
       </p>
     </div>
 
@@ -77,7 +78,7 @@ watch(otpValue, (val) => {
       <div v-else>
         <AppInput
           v-model="recoveryCode"
-          label="Recovery code"
+          :label="$t('auth.twoFactor.recoveryCode')"
           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           :disabled="isSubmitting"
         />
@@ -91,7 +92,7 @@ watch(otpValue, (val) => {
         :loading="isSubmitting"
         :disabled="useRecovery ? !recoveryCode.trim() : otpValue.length !== 6"
       >
-        Verify
+        {{ $t('auth.twoFactor.verify') }}
       </AppButton>
     </form>
 
@@ -101,13 +102,13 @@ watch(otpValue, (val) => {
         class="block w-full text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
         @click="toggleRecovery"
       >
-        {{ useRecovery ? 'Use authenticator app instead' : 'Use a recovery code instead' }}
+        {{ useRecovery ? $t('auth.twoFactor.toggleToOtp') : $t('auth.twoFactor.toggleToRecovery') }}
       </button>
       <NuxtLink
         to="/login"
         class="block text-sm text-slate-500 hover:text-slate-700 transition-colors"
       >
-        &larr; Back to login
+        &larr; {{ $t('auth.twoFactor.backToLogin') }}
       </NuxtLink>
     </div>
   </div>

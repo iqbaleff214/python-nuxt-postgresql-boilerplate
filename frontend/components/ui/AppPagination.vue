@@ -36,9 +36,7 @@ const to = computed(() => Math.min(props.page * props.perPage, props.total))
 <template>
   <div v-if="totalPages > 1" class="flex items-center justify-between gap-4">
     <p class="text-sm text-slate-500">
-      Showing <span class="font-medium text-slate-700">{{ from }}</span> to
-      <span class="font-medium text-slate-700">{{ to }}</span> of
-      <span class="font-medium text-slate-700">{{ total }}</span> results
+      {{ $t('pagination.showing', { from, to, total }) }}
     </p>
 
     <nav class="flex items-center gap-1">

@@ -4,11 +4,28 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/i18n',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt',
     '@nuxt/icon',
   ],
+
+  i18n: {
+    restructureDir: false,
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'id', name: 'Bahasa Indonesia', file: 'id.json' },
+    ],
+    defaultLocale: 'en',
+    langDir: 'locales/',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'lang',
+      redirectOn: 'root',
+    },
+  },
 
   runtimeConfig: {
     public: {

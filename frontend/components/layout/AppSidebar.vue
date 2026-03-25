@@ -10,51 +10,49 @@ const emit = defineEmits<{ close: [] }>()
 
 const authStore = useAuthStore()
 const route = useRoute()
+const { t } = useI18n()
 
 interface NavItem {
   label: string
   to: string
   icon: string
-  adminOnly?: boolean
 }
 
-const navItems: NavItem[] = [
+const navItems = computed<NavItem[]>(() => [
   {
-    label: 'Dashboard',
+    label: t('nav.dashboard'),
     to: '/dashboard',
     icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
   },
   {
-    label: 'Notifications',
+    label: t('nav.notifications'),
     to: '/notifications',
     icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
   },
   {
-    label: 'Profile',
+    label: t('nav.profile'),
     to: '/profile',
     icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
   },
   {
-    label: 'Security',
+    label: t('nav.security'),
     to: '/profile/security',
     icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
   },
-]
+])
 
-const adminNavItems: NavItem[] = [
+const adminNavItems = computed<NavItem[]>(() => [
   {
-    label: 'Users',
+    label: t('nav.users'),
     to: '/admin/users',
     icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
-    adminOnly: true,
   },
   {
-    label: 'Announcements',
+    label: t('nav.announcements'),
     to: '/admin/announcements',
     icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z',
-    adminOnly: true,
   },
-]
+])
 
 function isActive(to: string) {
   if (to === '/dashboard') return route.path === to
@@ -104,7 +102,9 @@ function isActive(to: string) {
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto px-3 py-4">
       <div class="space-y-0.5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Main</p>
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          {{ $t('nav.main') }}
+        </p>
 
         <NuxtLink
           v-for="item in navItems"
@@ -133,7 +133,9 @@ function isActive(to: string) {
 
       <!-- Admin section -->
       <div v-if="authStore.isSuperAdmin" class="mt-6 space-y-0.5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Administration</p>
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          {{ $t('nav.administration') }}
+        </p>
 
         <NuxtLink
           v-for="item in adminNavItems"

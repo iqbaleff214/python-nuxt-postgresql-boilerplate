@@ -6,6 +6,7 @@ definePageMeta({ middleware: 'auth' })
 
 const authStore = useAuthStore()
 const notifStore = useNotificationsStore()
+const { t } = useI18n()
 
 const userName = computed(() => {
   const u = authStore.user
@@ -15,9 +16,9 @@ const userName = computed(() => {
 
 const greeting = computed(() => {
   const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 17) return 'Good afternoon'
-  return 'Good evening'
+  if (hour < 12) return t('dashboard.greetingMorning')
+  if (hour < 17) return t('dashboard.greetingAfternoon')
+  return t('dashboard.greetingEvening')
 })
 
 const recentNotifications = computed(() => notifStore.notifications.slice(0, 3))
@@ -31,12 +32,12 @@ onMounted(async () => {
 
 function timeAgo(dateStr: string) {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (seconds < 60) return 'just now'
+  if (seconds < 60) return t('common.justNow')
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 60) return t('common.minutesAgo', { n: minutes })
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
-  return `${Math.floor(hours / 24)}d ago`
+  if (hours < 24) return t('common.hoursAgo', { n: hours })
+  return t('common.daysAgo', { n: Math.floor(hours / 24) })
 }
 </script>
 
@@ -49,7 +50,7 @@ function timeAgo(dateStr: string) {
           <p class="text-indigo-200 text-sm font-medium">{{ greeting }},</p>
           <h1 class="text-2xl font-bold text-white mt-0.5">{{ userName }}! 👋</h1>
           <p class="mt-1 text-indigo-200 text-sm">
-            Here's what's happening in your account today.
+            {{ $t('dashboard.tagline') }}
           </p>
         </div>
         <AppAvatar
@@ -74,7 +75,7 @@ function timeAgo(dateStr: string) {
             </svg>
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-500">Unread Notifications</p>
+            <p class="text-xs font-medium text-slate-500">{{ $t('dashboard.unreadNotifications') }}</p>
             <p class="text-2xl font-bold text-slate-900">{{ notifStore.unreadCount }}</p>
           </div>
         </div>
@@ -88,7 +89,7 @@ function timeAgo(dateStr: string) {
             </svg>
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-500">Account Status</p>
+            <p class="text-xs font-medium text-slate-500">{{ $t('dashboard.accountStatus') }}</p>
             <p class="text-sm font-bold text-emerald-600 mt-0.5 capitalize">{{ authStore.user?.status }}</p>
           </div>
         </div>
@@ -102,9 +103,9 @@ function timeAgo(dateStr: string) {
             </svg>
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-500">2FA Security</p>
+            <p class="text-xs font-medium text-slate-500">{{ $t('dashboard.twoFASecurity') }}</p>
             <p :class="['text-sm font-bold mt-0.5', authStore.user?.is_2fa_enabled ? 'text-emerald-600' : 'text-amber-600']">
-              {{ authStore.user?.is_2fa_enabled ? 'Enabled' : 'Disabled' }}
+              {{ authStore.user?.is_2fa_enabled ? $t('dashboard.enabled') : $t('dashboard.disabled') }}
             </p>
           </div>
         </div>
@@ -118,7 +119,7 @@ function timeAgo(dateStr: string) {
             </svg>
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-500">Role</p>
+            <p class="text-xs font-medium text-slate-500">{{ $t('dashboard.role') }}</p>
             <p class="text-sm font-bold text-slate-700 mt-0.5 capitalize">{{ authStore.user?.role }}</p>
           </div>
         </div>
@@ -128,7 +129,7 @@ function timeAgo(dateStr: string) {
     <!-- Bottom row -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <!-- Quick Links -->
-      <AppCard title="Quick actions" subtitle="Navigate to key sections">
+      <AppCard :title="$t('dashboard.quickActions')" :subtitle="$t('dashboard.quickActionsSubtitle')">
         <div class="space-y-2">
           <NuxtLink
             to="/profile"
@@ -140,8 +141,8 @@ function timeAgo(dateStr: string) {
               </svg>
             </div>
             <div class="flex-1">
-              <p class="font-medium text-slate-900">Edit Profile</p>
-              <p class="text-xs text-slate-500">Update your personal information</p>
+              <p class="font-medium text-slate-900">{{ $t('dashboard.editProfile') }}</p>
+              <p class="text-xs text-slate-500">{{ $t('dashboard.editProfileSub') }}</p>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -158,8 +159,8 @@ function timeAgo(dateStr: string) {
               </svg>
             </div>
             <div class="flex-1">
-              <p class="font-medium text-slate-900">Security Settings</p>
-              <p class="text-xs text-slate-500">Manage password and 2FA</p>
+              <p class="font-medium text-slate-900">{{ $t('dashboard.securitySettings') }}</p>
+              <p class="text-xs text-slate-500">{{ $t('dashboard.securitySettingsSub') }}</p>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -176,8 +177,8 @@ function timeAgo(dateStr: string) {
               </svg>
             </div>
             <div class="flex-1">
-              <p class="font-medium text-slate-900">Notifications</p>
-              <p class="text-xs text-slate-500">View all notifications</p>
+              <p class="font-medium text-slate-900">{{ $t('dashboard.notifications') }}</p>
+              <p class="text-xs text-slate-500">{{ $t('dashboard.notificationsSub') }}</p>
             </div>
             <span v-if="notifStore.unreadCount > 0" class="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
               {{ notifStore.unreadCount }}
@@ -190,7 +191,7 @@ function timeAgo(dateStr: string) {
       </AppCard>
 
       <!-- Recent Notifications -->
-      <AppCard title="Recent notifications" subtitle="Your latest activity">
+      <AppCard :title="$t('dashboard.recentNotifications')" :subtitle="$t('dashboard.recentNotificationsSubtitle')">
         <div v-if="recentNotifications.length > 0" class="-mx-6 divide-y divide-slate-100">
           <NotificationsNotificationItem
             v-for="notif in recentNotifications"
@@ -203,12 +204,12 @@ function timeAgo(dateStr: string) {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <p class="text-sm text-slate-400">No notifications yet</p>
+          <p class="text-sm text-slate-400">{{ $t('dashboard.noNotifications') }}</p>
         </div>
 
         <template #footer>
           <NuxtLink to="/notifications" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
-            View all notifications &rarr;
+            {{ $t('dashboard.viewAll') }} &rarr;
           </NuxtLink>
         </template>
       </AppCard>

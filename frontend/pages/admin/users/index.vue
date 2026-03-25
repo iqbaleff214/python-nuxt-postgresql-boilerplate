@@ -5,6 +5,7 @@ definePageMeta({ middleware: 'superadmin', layout: 'admin' })
 
 const api = useApi()
 const toast = useToast()
+const { t } = useI18n()
 
 const users = ref<User[]>([])
 const isLoading = ref(false)
@@ -20,28 +21,28 @@ const showDeleteModal = ref(false)
 const userToDelete = ref<User | null>(null)
 const isDeleting = ref(false)
 
-const columns = [
-  { key: 'name', label: 'Name' },
-  { key: 'email', label: 'Email' },
-  { key: 'role', label: 'Role' },
-  { key: 'status', label: 'Status' },
-  { key: 'verified', label: 'Verified' },
-  { key: 'last_login', label: 'Last Login' },
-  { key: 'actions', label: 'Actions', class: 'text-right' },
-]
+const columns = computed(() => [
+  { key: 'name', label: t('admin.users.colName') },
+  { key: 'email', label: t('admin.users.colEmail') },
+  { key: 'role', label: t('admin.users.colRole') },
+  { key: 'status', label: t('admin.users.colStatus') },
+  { key: 'verified', label: t('admin.users.colVerified') },
+  { key: 'last_login', label: t('admin.users.colLastLogin') },
+  { key: 'actions', label: t('admin.users.colActions'), class: 'text-right' },
+])
 
-const roleOptions = [
-  { value: '', label: 'All roles' },
-  { value: 'user', label: 'User' },
-  { value: 'superadmin', label: 'Superadmin' },
-]
+const roleOptions = computed(() => [
+  { value: '', label: t('admin.users.allRoles') },
+  { value: 'user', label: t('admin.users.user') },
+  { value: 'superadmin', label: t('admin.users.superadmin') },
+])
 
-const statusOptions = [
-  { value: '', label: 'All statuses' },
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'banned', label: 'Banned' },
-]
+const statusOptions = computed(() => [
+  { value: '', label: t('admin.users.allStatuses') },
+  { value: 'active', label: t('admin.users.active') },
+  { value: 'inactive', label: t('admin.users.inactive') },
+  { value: 'banned', label: t('admin.users.banned') },
+])
 
 async function fetchUsers() {
   isLoading.value = true
@@ -86,18 +87,18 @@ async function handleDelete() {
   const response = await api.delete(`/admin/users/${userToDelete.value.id}`)
 
   if (response.success) {
-    toast.success('User deleted successfully')
+    toast.success(t('admin.users.deleteSuccess'))
     showDeleteModal.value = false
     userToDelete.value = null
     fetchUsers()
   } else {
-    toast.error(response.message || 'Failed to delete user')
+    toast.error(response.message || t('admin.users.deleteFailed'))
   }
   isDeleting.value = false
 }
 
 function formatDate(dateStr: string | null) {
-  if (!dateStr) return 'Never'
+  if (!dateStr) return t('admin.users.never')
   return new Date(dateStr).toLocaleDateString()
 }
 
@@ -109,15 +110,15 @@ onMounted(fetchUsers)
     <!-- Header -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">User Management</h1>
-        <p class="mt-0.5 text-sm text-slate-500">{{ totalUsers }} total users</p>
+        <h1 class="text-2xl font-bold text-slate-900">{{ $t('admin.users.title') }}</h1>
+        <p class="mt-0.5 text-sm text-slate-500">{{ $t('admin.users.totalUsers', { n: totalUsers }) }}</p>
       </div>
       <NuxtLink to="/admin/users/create">
         <AppButton variant="primary">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          Create user
+          {{ $t('admin.users.createUser') }}
         </AppButton>
       </NuxtLink>
     </div>
@@ -134,7 +135,7 @@ onMounted(fetchUsers)
           <input
             v-model="search"
             type="text"
-            placeholder="Search by name or email..."
+            :placeholder="$t('admin.users.searchPlaceholder')"
             class="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
@@ -145,7 +146,7 @@ onMounted(fetchUsers)
     </AppCard>
 
     <!-- Table -->
-    <AppTable :columns="columns" :rows="users" :loading="isLoading" empty-message="No users found">
+    <AppTable :columns="columns" :rows="users" :loading="isLoading" :empty-message="$t('admin.users.noUsersFound')">
       <template #name="{ row }">
         <div class="flex items-center gap-3">
           <AppAvatar :src="row.avatar_url" :name="`${row.first_name} ${row.last_name}`" size="sm" />
@@ -176,7 +177,7 @@ onMounted(fetchUsers)
         <div class="flex items-center gap-1.5">
           <div :class="['h-2 w-2 rounded-full', row.is_email_verified ? 'bg-emerald-500' : 'bg-slate-300']" />
           <span :class="row.is_email_verified ? 'text-emerald-700' : 'text-slate-500'">
-            {{ row.is_email_verified ? 'Yes' : 'No' }}
+            {{ row.is_email_verified ? $t('common.yes') : $t('common.no') }}
           </span>
         </div>
       </template>
@@ -193,7 +194,7 @@ onMounted(fetchUsers)
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              View
+              {{ $t('admin.users.view') }}
             </AppButton>
           </NuxtLink>
           <AppButton variant="ghost" size="sm" class="text-red-600 hover:bg-red-50" @click="confirmDelete(row as User)">
@@ -215,19 +216,17 @@ onMounted(fetchUsers)
     />
 
     <!-- Delete modal -->
-    <AppModal v-model="showDeleteModal" title="Delete user" size="sm">
+    <AppModal v-model="showDeleteModal" :title="$t('admin.users.deleteTitle')" size="sm">
       <div class="space-y-3">
         <p class="text-sm text-slate-600">
-          Are you sure you want to delete
-          <strong>{{ userToDelete?.first_name }} {{ userToDelete?.last_name }}</strong>?
-          This action cannot be undone.
+          {{ $t('admin.users.deleteConfirm', { name: `${userToDelete?.first_name} ${userToDelete?.last_name}` }) }}
         </p>
-        <AppAlert variant="error">All user data will be permanently deleted.</AppAlert>
+        <AppAlert variant="error">{{ $t('admin.users.deleteWarning') }}</AppAlert>
       </div>
       <template #footer>
         <div class="flex gap-3 justify-end">
-          <AppButton variant="secondary" @click="showDeleteModal = false">Cancel</AppButton>
-          <AppButton variant="danger" :loading="isDeleting" @click="handleDelete">Delete user</AppButton>
+          <AppButton variant="secondary" @click="showDeleteModal = false">{{ $t('common.cancel') }}</AppButton>
+          <AppButton variant="danger" :loading="isDeleting" @click="handleDelete">{{ $t('admin.users.deleteTitle') }}</AppButton>
         </div>
       </template>
     </AppModal>

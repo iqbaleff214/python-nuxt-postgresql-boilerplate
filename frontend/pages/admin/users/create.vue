@@ -8,16 +8,17 @@ definePageMeta({ middleware: 'superadmin', layout: 'admin' })
 const api = useApi()
 const toast = useToast()
 const router = useRouter()
+const { t } = useI18n()
 
-const schema = toTypedSchema(
+const schema = computed(() => toTypedSchema(
   z.object({
-    email: z.string().email('Please enter a valid email address'),
-    first_name: z.string().min(1, 'First name is required'),
-    last_name: z.string().min(1, 'Last name is required'),
+    email: z.string().email(t('validation.emailInvalid')),
+    first_name: z.string().min(1, t('validation.firstNameRequired')),
+    last_name: z.string().min(1, t('validation.lastNameRequired')),
     role: z.enum(['user', 'superadmin']),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password: z.string().min(8, t('validation.passwordMin')),
   })
-)
+))
 
 const { handleSubmit, errors, isSubmitting } = useForm({
   validationSchema: schema,
@@ -32,20 +33,20 @@ const { value: password } = useField<string>('password')
 
 const apiError = ref('')
 
-const roleOptions = [
-  { value: 'user', label: 'User' },
-  { value: 'superadmin', label: 'Superadmin' },
-]
+const roleOptions = computed(() => [
+  { value: 'user', label: t('admin.users.user') },
+  { value: 'superadmin', label: t('admin.users.superadmin') },
+])
 
 const onSubmit = handleSubmit(async (values) => {
   apiError.value = ''
   const response = await api.post('/admin/users', values)
 
   if (response.success) {
-    toast.success('User created successfully')
+    toast.success(t('admin.createUser.success'))
     router.push('/admin/users')
   } else {
-    apiError.value = response.message || 'Failed to create user'
+    apiError.value = response.message || t('admin.createUser.failed')
   }
 })
 </script>
@@ -59,17 +60,17 @@ const onSubmit = handleSubmit(async (values) => {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back
+          {{ $t('common.back') }}
         </AppButton>
       </NuxtLink>
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">Create user</h1>
-        <p class="mt-0.5 text-sm text-slate-500">Add a new user to the system</p>
+        <h1 class="text-2xl font-bold text-slate-900">{{ $t('admin.createUser.title') }}</h1>
+        <p class="mt-0.5 text-sm text-slate-500">{{ $t('admin.createUser.subtitle') }}</p>
       </div>
     </div>
 
     <div class="max-w-2xl">
-      <AppCard title="User information">
+      <AppCard :title="$t('admin.createUser.userInfo')">
         <AppAlert v-if="apiError" variant="error" class="mb-4" dismissible @dismiss="apiError = ''">
           {{ apiError }}
         </AppAlert>
@@ -78,14 +79,14 @@ const onSubmit = handleSubmit(async (values) => {
           <div class="grid grid-cols-2 gap-4">
             <AppInput
               v-model="firstName"
-              label="First name"
+              :label="$t('admin.createUser.firstName')"
               placeholder="John"
               :error="errors.first_name"
               required
             />
             <AppInput
               v-model="lastName"
-              label="Last name"
+              :label="$t('admin.createUser.lastName')"
               placeholder="Doe"
               :error="errors.last_name"
               required
@@ -94,7 +95,7 @@ const onSubmit = handleSubmit(async (values) => {
 
           <AppInput
             v-model="email"
-            label="Email address"
+            :label="$t('admin.createUser.email')"
             type="email"
             placeholder="user@example.com"
             :error="errors.email"
@@ -103,7 +104,7 @@ const onSubmit = handleSubmit(async (values) => {
 
           <AppSelect
             v-model="role"
-            label="Role"
+            :label="$t('admin.createUser.role')"
             :options="roleOptions"
             :error="errors.role"
             required
@@ -111,20 +112,20 @@ const onSubmit = handleSubmit(async (values) => {
 
           <AppInput
             v-model="password"
-            label="Temporary password"
+            :label="$t('admin.createUser.tempPassword')"
             type="password"
-            placeholder="Min. 8 characters"
+            :placeholder="$t('auth.register.passwordPlaceholder')"
             :error="errors.password"
-            hint="User will be prompted to change this on first login"
+            :hint="$t('admin.createUser.tempPasswordHint')"
             required
           />
 
           <div class="flex gap-3 justify-end border-t border-slate-100 pt-4">
             <NuxtLink to="/admin/users">
-              <AppButton variant="secondary">Cancel</AppButton>
+              <AppButton variant="secondary">{{ $t('common.cancel') }}</AppButton>
             </NuxtLink>
             <AppButton type="submit" variant="primary" :loading="isSubmitting">
-              Create user
+              {{ $t('admin.createUser.submit') }}
             </AppButton>
           </div>
         </form>

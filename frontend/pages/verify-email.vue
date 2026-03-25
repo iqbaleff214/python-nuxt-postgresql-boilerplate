@@ -3,6 +3,7 @@ definePageMeta({ layout: 'auth' })
 
 const api = useApi()
 const route = useRoute()
+const { t } = useI18n()
 
 const status = ref<'loading' | 'success' | 'error'>('loading')
 const errorMessage = ref('')
@@ -12,7 +13,7 @@ onMounted(async () => {
 
   if (!token) {
     status.value = 'error'
-    errorMessage.value = 'Verification token is missing. Please check your email link.'
+    errorMessage.value = t('auth.verifyEmail.tokenMissing')
     return
   }
 
@@ -22,7 +23,7 @@ onMounted(async () => {
     status.value = 'success'
   } else {
     status.value = 'error'
-    errorMessage.value = response.message || 'Email verification failed. The link may be expired or invalid.'
+    errorMessage.value = response.message || t('auth.verifyEmail.failedMsg')
   }
 })
 </script>
@@ -33,8 +34,8 @@ onMounted(async () => {
     <div v-if="status === 'loading'" class="flex flex-col items-center gap-4">
       <AppSpinner size="lg" />
       <div>
-        <h2 class="text-xl font-bold text-slate-900">Verifying your email</h2>
-        <p class="mt-1 text-sm text-slate-500">Please wait a moment...</p>
+        <h2 class="text-xl font-bold text-slate-900">{{ $t('auth.verifyEmail.verifying') }}</h2>
+        <p class="mt-1 text-sm text-slate-500">{{ $t('auth.verifyEmail.pleaseWait') }}</p>
       </div>
     </div>
 
@@ -46,12 +47,12 @@ onMounted(async () => {
         </svg>
       </div>
       <div>
-        <h2 class="text-2xl font-bold text-slate-900">Email verified!</h2>
-        <p class="mt-1 text-sm text-slate-500">Your email has been successfully verified. You can now sign in.</p>
+        <h2 class="text-2xl font-bold text-slate-900">{{ $t('auth.verifyEmail.success') }}</h2>
+        <p class="mt-1 text-sm text-slate-500">{{ $t('auth.verifyEmail.successMsg') }}</p>
       </div>
       <NuxtLink to="/login">
         <AppButton variant="primary" size="lg">
-          Sign in to your account
+          {{ $t('auth.verifyEmail.signIn') }}
         </AppButton>
       </NuxtLink>
     </div>
@@ -64,15 +65,15 @@ onMounted(async () => {
         </svg>
       </div>
       <div>
-        <h2 class="text-2xl font-bold text-slate-900">Verification failed</h2>
+        <h2 class="text-2xl font-bold text-slate-900">{{ $t('auth.verifyEmail.failed') }}</h2>
         <p class="mt-1 text-sm text-slate-500">{{ errorMessage }}</p>
       </div>
       <div class="flex gap-3">
         <NuxtLink to="/login">
-          <AppButton variant="secondary">Back to login</AppButton>
+          <AppButton variant="secondary">{{ $t('auth.verifyEmail.backToLogin') }}</AppButton>
         </NuxtLink>
         <NuxtLink to="/register">
-          <AppButton variant="primary">Create new account</AppButton>
+          <AppButton variant="primary">{{ $t('auth.verifyEmail.createAccount') }}</AppButton>
         </NuxtLink>
       </div>
     </div>

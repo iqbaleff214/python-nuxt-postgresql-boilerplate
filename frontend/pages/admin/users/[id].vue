@@ -7,6 +7,7 @@ const api = useApi()
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const userId = route.params.id as string
 const user = ref<User | null>(null)
@@ -45,7 +46,7 @@ async function fetchUser() {
       role: response.data.role,
     })
   } else {
-    toast.error('User not found')
+    toast.error(t('admin.users.notFound'))
     router.push('/admin/users')
   }
   isLoading.value = false
@@ -59,9 +60,9 @@ async function handleSave() {
 
   if (response.success) {
     await fetchUser()
-    toast.success('User updated successfully')
+    toast.success(t('admin.editUser.updated'))
   } else {
-    formError.value = response.message || 'Failed to update user'
+    formError.value = response.message || t('admin.editUser.updateFailed')
   }
   isSaving.value = false
 }
@@ -80,9 +81,9 @@ async function handleStatusChange() {
   if (response.success) {
     await fetchUser()
     showStatusModal.value = false
-    toast.success(`User ${pendingStatus.value} successfully`)
+    toast.success(t('admin.editUser.statusSuccess', { status: pendingStatus.value }))
   } else {
-    toast.error(response.message || 'Failed to change status')
+    toast.error(response.message || t('admin.editUser.statusFailed'))
   }
   isChangingStatus.value = false
 }
@@ -92,10 +93,10 @@ async function handleDelete() {
   const response = await api.delete(`/admin/users/${userId}`)
 
   if (response.success) {
-    toast.success('User deleted')
+    toast.success(t('admin.editUser.deleteSuccess'))
     router.push('/admin/users')
   } else {
-    toast.error(response.message || 'Failed to delete user')
+    toast.error(response.message || t('admin.editUser.deleteFailed'))
     isDeleting.value = false
   }
 }
@@ -103,12 +104,17 @@ async function handleDelete() {
 const statusActions = computed(() => {
   if (!user.value) return []
   const all = [
-    { status: 'active' as const, label: 'Activate', variant: 'primary' as const, icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-    { status: 'inactive' as const, label: 'Deactivate', variant: 'secondary' as const, icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' },
-    { status: 'banned' as const, label: 'Ban', variant: 'danger' as const, icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' },
+    { status: 'active' as const, label: t('admin.editUser.activate'), variant: 'primary' as const, icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { status: 'inactive' as const, label: t('admin.editUser.deactivate'), variant: 'secondary' as const, icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' },
+    { status: 'banned' as const, label: t('admin.editUser.ban'), variant: 'danger' as const, icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' },
   ]
   return all.filter((a) => a.status !== user.value?.status)
 })
+
+const roleOptions = computed(() => [
+  { value: 'user', label: t('admin.users.user') },
+  { value: 'superadmin', label: t('admin.users.superadmin') },
+])
 
 onMounted(fetchUser)
 </script>
@@ -122,7 +128,7 @@ onMounted(fetchUser)
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Users
+          {{ $t('admin.editUser.back') }}
         </AppButton>
       </NuxtLink>
     </div>
@@ -145,14 +151,14 @@ onMounted(fetchUser)
               <AppBadge :variant="user.status === 'active' ? 'success' : user.status === 'banned' ? 'danger' : 'warning'">
                 {{ user.status }}
               </AppBadge>
-              <AppBadge v-if="user.is_email_verified" variant="success">Email verified</AppBadge>
-              <AppBadge v-else variant="warning">Email unverified</AppBadge>
-              <AppBadge v-if="user.is_2fa_enabled" variant="info">2FA enabled</AppBadge>
+              <AppBadge v-if="user.is_email_verified" variant="success">{{ $t('admin.editUser.emailVerified') }}</AppBadge>
+              <AppBadge v-else variant="warning">{{ $t('admin.editUser.emailUnverified') }}</AppBadge>
+              <AppBadge v-if="user.is_2fa_enabled" variant="info">{{ $t('admin.editUser.twoFAEnabled') }}</AppBadge>
             </div>
           </div>
           <div class="text-right text-sm text-slate-500">
-            <p>Joined {{ new Date(user.created_at).toLocaleDateString() }}</p>
-            <p>Last login: {{ user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never' }}</p>
+            <p>{{ $t('admin.editUser.joined', { date: new Date(user.created_at).toLocaleDateString() }) }}</p>
+            <p>{{ $t('admin.editUser.lastLogin', { date: user.last_login_at ? new Date(user.last_login_at).toLocaleString() : $t('admin.editUser.never') }) }}</p>
           </div>
         </div>
       </AppCard>
@@ -160,7 +166,7 @@ onMounted(fetchUser)
       <!-- Tabs -->
       <div class="flex gap-1 rounded-xl bg-slate-100 p-1 w-fit">
         <button
-          v-for="tab in [{ value: 'details', label: 'Details' }, { value: 'status', label: 'Status Management' }]"
+          v-for="tab in [{ value: 'details', label: $t('admin.editUser.detailsTab') }, { value: 'status', label: $t('admin.editUser.statusTab') }]"
           :key="tab.value"
           type="button"
           :class="[
@@ -175,22 +181,22 @@ onMounted(fetchUser)
 
       <!-- Details tab -->
       <div v-if="activeTab === 'details'">
-        <AppCard title="Edit user details" class="max-w-2xl">
+        <AppCard :title="$t('admin.editUser.editDetails')" class="max-w-2xl">
           <AppAlert v-if="formError" variant="error" class="mb-4" dismissible @dismiss="formError = ''">
             {{ formError }}
           </AppAlert>
 
           <form class="space-y-4" @submit.prevent="handleSave">
             <div class="grid grid-cols-2 gap-4">
-              <AppInput v-model="form.first_name" label="First name" required />
-              <AppInput v-model="form.last_name" label="Last name" required />
+              <AppInput v-model="form.first_name" :label="$t('admin.editUser.firstName')" required />
+              <AppInput v-model="form.last_name" :label="$t('admin.editUser.lastName')" required />
             </div>
-            <AppInput v-model="form.display_name" label="Display name" />
-            <AppSelect v-model="form.role" label="Role" :options="[{ value: 'user', label: 'User' }, { value: 'superadmin', label: 'Superadmin' }]" />
-            <AppTextarea v-model="form.bio" label="Bio" :rows="3" />
+            <AppInput v-model="form.display_name" :label="$t('admin.editUser.displayName')" />
+            <AppSelect v-model="form.role" :label="$t('admin.editUser.role')" :options="roleOptions" />
+            <AppTextarea v-model="form.bio" :label="$t('admin.editUser.bio')" :rows="3" />
 
             <div class="flex justify-end border-t border-slate-100 pt-4">
-              <AppButton type="submit" variant="primary" :loading="isSaving">Save changes</AppButton>
+              <AppButton type="submit" variant="primary" :loading="isSaving">{{ $t('admin.editUser.saveChanges') }}</AppButton>
             </div>
           </form>
         </AppCard>
@@ -198,7 +204,7 @@ onMounted(fetchUser)
 
       <!-- Status tab -->
       <div v-else class="space-y-4 max-w-2xl">
-        <AppCard title="Account status" subtitle="Change this user's account status">
+        <AppCard :title="$t('admin.editUser.accountStatus')" :subtitle="$t('admin.editUser.accountStatusSub')">
           <div class="flex flex-wrap gap-3">
             <AppButton
               v-for="action in statusActions"
@@ -206,12 +212,12 @@ onMounted(fetchUser)
               :variant="action.variant"
               @click="confirmStatusChange(action.status)"
             >
-              {{ action.label }} user
+              {{ $t('admin.editUser.userAction', { action: action.label }) }}
             </AppButton>
           </div>
 
           <div class="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-600">
-            <p><strong>Current status:</strong>
+            <p><strong>{{ $t('admin.editUser.currentStatus') }}</strong>
               <span :class="[
                 'ml-1 capitalize font-medium',
                 user.status === 'active' ? 'text-emerald-600' : user.status === 'banned' ? 'text-red-600' : 'text-amber-600'
@@ -223,38 +229,37 @@ onMounted(fetchUser)
         <AppCard>
           <div class="flex items-start justify-between gap-4 rounded-lg border border-red-200 bg-red-50 p-4">
             <div>
-              <p class="font-semibold text-red-800">Delete user</p>
-              <p class="mt-0.5 text-sm text-red-700">Permanently delete this user and all their data.</p>
+              <p class="font-semibold text-red-800">{{ $t('admin.editUser.deleteUser') }}</p>
+              <p class="mt-0.5 text-sm text-red-700">{{ $t('admin.editUser.deleteUserSub') }}</p>
             </div>
-            <AppButton variant="danger" size="sm" @click="showDeleteModal = true">Delete</AppButton>
+            <AppButton variant="danger" size="sm" @click="showDeleteModal = true">{{ $t('common.delete') }}</AppButton>
           </div>
         </AppCard>
       </div>
     </template>
 
     <!-- Status change confirmation -->
-    <AppModal v-model="showStatusModal" title="Confirm status change" size="sm">
+    <AppModal v-model="showStatusModal" :title="$t('admin.editUser.confirmStatusTitle')" size="sm">
       <p class="text-sm text-slate-600">
-        Are you sure you want to set this user's status to
-        <strong class="capitalize">{{ pendingStatus }}</strong>?
+        {{ $t('admin.editUser.confirmStatusMsg', { status: pendingStatus }) }}
       </p>
       <template #footer>
         <div class="flex gap-3 justify-end">
-          <AppButton variant="secondary" @click="showStatusModal = false">Cancel</AppButton>
+          <AppButton variant="secondary" @click="showStatusModal = false">{{ $t('common.cancel') }}</AppButton>
           <AppButton variant="primary" :loading="isChangingStatus" @click="handleStatusChange">
-            Confirm
+            {{ $t('common.confirm') }}
           </AppButton>
         </div>
       </template>
     </AppModal>
 
     <!-- Delete confirmation -->
-    <AppModal v-model="showDeleteModal" title="Delete user" size="sm">
-      <AppAlert variant="error">This will permanently delete the user and all associated data.</AppAlert>
+    <AppModal v-model="showDeleteModal" :title="$t('admin.editUser.deleteUser')" size="sm">
+      <AppAlert variant="error">{{ $t('admin.editUser.deleteConfirm') }}</AppAlert>
       <template #footer>
         <div class="flex gap-3 justify-end">
-          <AppButton variant="secondary" @click="showDeleteModal = false">Cancel</AppButton>
-          <AppButton variant="danger" :loading="isDeleting" @click="handleDelete">Delete user</AppButton>
+          <AppButton variant="secondary" @click="showDeleteModal = false">{{ $t('common.cancel') }}</AppButton>
+          <AppButton variant="danger" :loading="isDeleting" @click="handleDelete">{{ $t('admin.editUser.deleteUser') }}</AppButton>
         </div>
       </template>
     </AppModal>
