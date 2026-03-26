@@ -35,16 +35,30 @@ const typeConfig = computed(() => {
   return map[props.notification.type] ?? map.default
 })
 
-function timeAgo(dateStr: string) {
-  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (seconds < 60) return 'just now'
+function timeAgo(dateStr: string): string {
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return ''
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+  if (seconds < 5) return 'just now'
+  if (seconds < 60) return `${seconds}s ago`
   const minutes = Math.floor(seconds / 60)
   if (minutes < 60) return `${minutes}m ago`
   const hours = Math.floor(minutes / 60)
   if (hours < 24) return `${hours}h ago`
   const days = Math.floor(hours / 24)
   if (days < 7) return `${days}d ago`
-  return new Date(dateStr).toLocaleDateString()
+  return formatAbsolute(dateStr, false)
+}
+
+function formatAbsolute(dateStr: string, includeTime = true): string {
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    ...(includeTime ? { hour: '2-digit', minute: '2-digit' } : {}),
+  }).format(date)
 }
 </script>
 
@@ -68,16 +82,24 @@ function timeAgo(dateStr: string) {
     <div class="flex-1 min-w-0">
       <div class="flex items-start justify-between gap-2">
         <p :class="['text-sm leading-snug', !notification.read_at ? 'font-semibold text-slate-900' : 'font-medium text-slate-700']">
+          <span v-if="!notification.read_at" class="mr-1 inline-flex h-1.5 w-1.5 rounded-full bg-indigo-500 align-middle" />
           {{ notification.title }}
         </p>
-        <span class="flex-shrink-0 text-xs text-slate-400">{{ timeAgo(notification.created_at) }}</span>
+        <span class="flex-shrink-0 text-xs text-slate-400 whitespace-nowrap">{{ timeAgo(notification.created_at) }}</span>
       </div>
-      <p v-if="notification.body && !compact" class="mt-0.5 text-sm text-slate-500 line-clamp-2">
+
+      <!-- Body: clamp in compact, full text in full mode -->
+      <p v-if="notification.body && !compact" class="mt-1 text-sm text-slate-600 whitespace-pre-wrap">
+        {{ notification.body }}
+      </p>
+      <p v-else-if="notification.body && compact" class="mt-0.5 text-xs text-slate-500 line-clamp-1">
         {{ notification.body }}
       </p>
 
-      <!-- Unread indicator -->
-      <span v-if="!notification.read_at" class="mt-1 inline-flex h-1.5 w-1.5 rounded-full bg-indigo-500" />
+      <!-- Absolute timestamp — full mode only -->
+      <p v-if="!compact && notification.created_at" class="mt-1.5 text-xs text-slate-400">
+        {{ formatAbsolute(notification.created_at) }}
+      </p>
     </div>
   </div>
 </template>

@@ -77,7 +77,7 @@ async function handleMarkRead(id: string) {
               v-for="notif in recentNotifications"
               :key="notif.id"
               :notification="notif"
-              compact
+              :compact="false"
               class="cursor-pointer"
               @read="handleMarkRead"
             />

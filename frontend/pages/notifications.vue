@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useNotificationsStore } from '~/stores/notifications'
 
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: 'auth', ssr: false })
 
 const notifStore = useNotificationsStore()
 const toast = useToast()
@@ -78,17 +78,19 @@ onMounted(() => loadPage(1))
     </div>
 
     <!-- Notifications list -->
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div v-if="isLoading" class="divide-y divide-slate-100">
-        <div v-for="i in 5" :key="i" class="flex gap-3 px-4 py-4 animate-pulse">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <!-- Loading skeleton -->
+      <template v-if="isLoading">
+        <div v-for="i in 5" :key="i" class="flex gap-3 px-4 py-4 animate-pulse border-b border-slate-100 last:border-b-0">
           <div class="h-9 w-9 rounded-lg bg-slate-200 flex-shrink-0" />
           <div class="flex-1 space-y-2">
             <div class="h-4 w-1/2 rounded bg-slate-200" />
             <div class="h-3 w-3/4 rounded bg-slate-200" />
           </div>
         </div>
-      </div>
+      </template>
 
+      <!-- Empty state -->
       <div v-else-if="notifStore.notifications.length === 0" class="flex flex-col items-center gap-3 py-16">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -111,15 +113,16 @@ onMounted(() => loadPage(1))
         </button>
       </div>
 
-      <div v-else class="divide-y divide-slate-100">
-        <NotificationsNotificationItem
-          v-for="notif in notifStore.notifications"
+      <!-- Notification items -->
+      <template v-else>
+        <NotificationItem
+          v-for="(notif, index) in notifStore.notifications"
           :key="notif.id"
           :notification="notif"
-          class="cursor-pointer"
+          :class="['cursor-pointer', index < notifStore.notifications.length - 1 ? 'border-b border-slate-100' : '']"
           @read="handleMarkRead"
         />
-      </div>
+      </template>
     </div>
 
     <!-- Pagination -->

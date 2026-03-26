@@ -31,7 +31,18 @@ export function useNotifications() {
           const message = JSON.parse(event.data)
           // Ignore server-side ping keepalive messages
           if (message.type === 'ping') return
-          notifStore.addNotification(message)
+
+          // Map the WS envelope to the Notification interface
+          const notification = {
+            id: message.id ?? crypto.randomUUID(),
+            user_id: message.user_id ?? '',
+            type: message.notification_type ?? message.type ?? 'system',
+            title: message.title,
+            body: message.body ?? null,
+            read_at: message.read_at ?? null,
+            created_at: message.created_at ?? new Date().toISOString(),
+          }
+          notifStore.addNotification(notification)
           toast.success(message.title)
         } catch {
           // ignore parse errors

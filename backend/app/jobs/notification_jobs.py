@@ -28,9 +28,11 @@ async def send_notification(
             payload = {
                 "type": "notification",
                 "id": str(notification.id),
+                "user_id": str(user_id),
                 "notification_type": type,
                 "title": title,
                 "body": body,
+                "read_at": None,
                 "created_at": notification.created_at.isoformat(),
             }
             channel = f"notifications:{user_id}"
@@ -53,20 +55,29 @@ async def broadcast_announcement(
 ) -> None:
     """ARQ job: send a notification to multiple users."""
     try:
+        notifications_by_user: dict[str, dict] = {}
         async with AsyncSessionLocal() as db:
             for user_id in user_ids:
-                await create_notification(db, user_id, "announcement", title, body)
+                notif = await create_notification(db, user_id, "announcement", title, body)
+                notifications_by_user[user_id] = {
+                    "id": str(notif.id),
+                    "created_at": notif.created_at.isoformat(),
+                }
             await db.commit()
 
         redis_client = ctx.get("redis")
         if redis_client:
-            payload = {
-                "type": "notification",
-                "notification_type": "announcement",
-                "title": title,
-                "body": body,
-            }
-            for user_id in user_ids:
+            for user_id, meta in notifications_by_user.items():
+                payload = {
+                    "type": "notification",
+                    "id": meta["id"],
+                    "user_id": user_id,
+                    "notification_type": "announcement",
+                    "title": title,
+                    "body": body,
+                    "read_at": None,
+                    "created_at": meta["created_at"],
+                }
                 channel = f"notifications:{user_id}"
                 await redis_client.publish(channel, json.dumps(payload))
 
