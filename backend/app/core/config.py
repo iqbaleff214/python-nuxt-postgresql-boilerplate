@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@db:5432/myapp"
 
     # Redis
-    REDIS_URL: str = "redis://redis:6379/0"
+    REDIS_URL: str = "redis://:redispassword@redis:6379/0"
 
     # Tokens
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
