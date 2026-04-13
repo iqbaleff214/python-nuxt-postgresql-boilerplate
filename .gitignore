@@ -46,3 +46,6 @@ logs/
 
 # Alembic
 # (keep migrations in version control)
+
+# References
+.reference/
