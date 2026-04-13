@@ -32,7 +32,7 @@ const inputType = computed(() => {
 const baseClasses =
   'w-full rounded-lg border px-3 py-2 text-sm text-slate-900 placeholder-slate-400 transition-all duration-150 focus:outline-none focus:ring-2 dark:text-slate-100 dark:placeholder-slate-500'
 const normalClasses =
-  'border-slate-300 bg-white focus:border-indigo-500 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-700'
+  'border-slate-300 bg-white focus:border-blue-600 focus:ring-blue-600/20 dark:border-slate-600 dark:bg-slate-700'
 const errorClasses =
   'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-500/20 dark:bg-red-900/20 dark:border-red-500'
 const disabledClasses = 'bg-slate-100 text-slate-500 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500'

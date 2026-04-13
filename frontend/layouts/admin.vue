@@ -36,6 +36,6 @@ if (!authStore.isSuperAdmin) {
     </div>
 
     <!-- Mobile bottom navigation -->
-    <AppBottomNav />
+    <AppBottomNav v-if="false" />
   </div>
 </template>

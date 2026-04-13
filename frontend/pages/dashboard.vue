@@ -44,10 +44,10 @@ function timeAgo(dateStr: string) {
 <template>
   <div class="space-y-6">
     <!-- Hero welcome card -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 p-6 text-white shadow-lg">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-primary-600 p-6 text-white shadow-lg">
       <div class="relative z-10 flex items-center justify-between gap-4">
         <div>
-          <p class="text-indigo-200 text-sm font-medium">{{ greeting }},</p>
+          <p class="text-primary-300 text-sm font-medium">{{ greeting }},</p>
           <h1 class="text-2xl font-bold text-white mt-0.5">{{ userName }}! 👋</h1>
           <p class="mt-1 text-indigo-200 text-sm">
             {{ $t('dashboard.tagline') }}
@@ -69,8 +69,8 @@ function timeAgo(dateStr: string) {
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <AppCard padding="md" shadow="sm">
         <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
           </div>
@@ -135,8 +135,8 @@ function timeAgo(dateStr: string) {
             to="/profile"
             class="flex items-center gap-3 rounded-lg p-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
           >
-            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -208,7 +208,7 @@ function timeAgo(dateStr: string) {
         </div>
 
         <template #footer>
-          <NuxtLink to="/notifications" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+          <NuxtLink to="/notifications" class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
             {{ $t('dashboard.viewAll') }} &rarr;
           </NuxtLink>
         </template>

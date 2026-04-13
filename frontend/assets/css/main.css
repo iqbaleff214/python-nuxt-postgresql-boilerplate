@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900;
+    @apply bg-[#F5F7FA] text-slate-900;
   }
 
   *,
@@ -41,7 +41,7 @@
 @layer components {
   /* Focus ring utilities */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600;
   }
 
   /* Smooth page transitions */

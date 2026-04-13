@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 const variantClasses = computed(() => {
   const map: Record<string, string> = {
     primary:
-      'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 border-transparent shadow-sm',
+      'bg-primary text-white hover:bg-primary-600 focus:ring-primary/30 border-transparent shadow-sm rounded-full',
     secondary:
       'bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-slate-400 border-transparent dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600',
     danger:
@@ -26,7 +26,7 @@ const variantClasses = computed(() => {
     ghost:
       'bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-slate-400 border-transparent dark:text-slate-400 dark:hover:bg-slate-700',
     outline:
-      'bg-transparent text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-400 border-indigo-300 dark:text-indigo-400 dark:hover:bg-indigo-900/20 dark:border-indigo-700',
+      'bg-transparent text-primary hover:bg-primary/5 focus:ring-primary/30 border-primary/30 dark:text-primary-300 dark:hover:bg-primary/10 dark:border-primary-600',
   }
   return map[props.variant] ?? map.primary
 })
